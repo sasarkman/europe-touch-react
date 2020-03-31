@@ -1,0 +1,20 @@
+{
+  "name": "europe-touch",
+  "version": "1.0.0",
+  "description": "The code for the Europe Touch web application.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sasarkman/europe-touch"
+  },
+  "author": "Sasa Rkman",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "morgan": "^1.10.0",
+    "vue": "^2.6.11"
+  }
+}
