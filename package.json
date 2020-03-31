@@ -2,7 +2,7 @@
   "name": "europe-touch",
   "version": "1.0.0",
   "description": "The code for the Europe Touch web application.",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -14,6 +14,7 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.1",
+    "mongodb": "^3.5.5",
     "morgan": "^1.10.0",
     "vue": "^2.6.11"
   }
