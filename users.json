@@ -1,0 +1,2 @@
+// An basic mongodb collection
+[{"userID": 1,"username": "test1"},{"userID": 2,"username": "test2"},{"userID": 3,"username": "test3"}]
