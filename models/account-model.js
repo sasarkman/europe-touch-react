@@ -12,6 +12,10 @@ var AccountSchema = new mongoose.Schema({
 	password: {
 		type: String,
 		required: true
+	},
+	admin: {
+		type: Boolean,
+		default: false
 	}
 });
 
@@ -32,10 +36,10 @@ AccountSchema.pre('save', function(next) {
 	})
 })
 
-AccountSchema.methods.comparePassword = function(candidatePassword, cb) {
+AccountSchema.methods.comparePassword = function(candidatePassword, callback) {
 	bcrypt.compare(candidatePassword, this.password, function(err, isMatch) {
-		if(err) return cb(err);
-		cb(null, isMatch);
+		if(err) return callback(err);
+		return callback(null, isMatch);
 	})
 }
 
