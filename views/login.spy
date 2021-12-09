@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<!-- <script type="text/javascript" src="index.js"></script> -->
+<head>
+	<title>Login Page</title>
+</head>
+<body>
+	<h1>Login</h1>
+	<form method="post">
+		<label for="email">Email:</label><br>
+		<input type="text" id="email" name="email"><br>
+
+		<label for="password">Password:</label><br>
+		<input type="password" id="password" name="password"><br>
+
+		<input type="submit" formaction="/account/login" value="Login">
+	</form>
+</body>
+</html>

@@ -8,20 +8,29 @@ var AppointmentSchema = new mongoose.Schema({
 		type: String, 
 		required: true, 
 	},
+	service: {
+		type: String,
+		required: true
+	},
 	date: {
 		type: Date,
 		required: true
 	},
-	created: {
+	createdTimestamp: {
 		type: Date,
-		default: new Date()
+		default: Date().now
+	},
+	approved: {
+		type: Boolean,
+		default: false
 	}
 });
 
 AppointmentSchema.pre('save', function(next) {
 	var appointment = this;
 
-	if(!appointment.isModified('date')) return next();
+	console.log(`Converting ${appointment.data} to ${Date.parse(appointment.date)}`);
+	appointment.date = Date.parse(appointment.date);
 });
 
 module.exports = mongoose.model('appointments', AppointmentSchema);

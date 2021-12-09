@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<script type="text/javascript" src=""></script>
+<head>
+	<title>Create Account</title>
+</head>
+<body>
+	<h1>Create Account</h1>
+    <form method="post">
+        <label for="email">E-mail address:</label><br>
+        <input type="email" id="email" name="email"><br>
+
+        <label for="password">Password:</label><br>
+        <input type="password" id="password" name="password"><br>
+
+
+        <input type="submit" formaction="account/createaccount" value="Create account">
+    </form>
+</body>
+</html>
