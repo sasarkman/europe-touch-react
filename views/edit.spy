@@ -4,22 +4,22 @@
 <head>
 	<title>Edit services</title>
 </head>
-<body>
-	<h1>Edit services</h1>
-	<form method="post">
-		<label for="service">Service name:</label><br>
-		<input type="service" id="service" name="service"><br>
+	<body>
+		<h1>Edit services</h1>
+		<form method="post">
+			<label for="service">Service name:</label><br>
+			<input type="service" id="service" name="service"><br>
 
-		<label for="duration">Duration:</label><br>
-		<input type="duration" id="duration" name="duration"><br>
+			<label for="duration">Duration:</label><br>
+			<input type="duration" id="duration" name="duration"><br>
 
-		<label for="pricee">Price:</label><br>
-		<input type="pricee" id="pricee" name="pricee"><br>
+			<label for="pricee">Price:</label><br>
+			<input type="pricee" id="pricee" name="pricee"><br>
 
-		<label for="description">Description:</label><br>
-		<input type="description" id="description" name="description"><br>
+			<label for="description">Description:</label><br>
+			<input type="description" id="description" name="description"><br>
 
-		<input type="submit" formaction="service/editservice" value="Edit service">
-	</form>
-</body>
+			<input type="submit" formaction="service/editservice" value="Edit service">
+		</form>
+	</body>
 </html>

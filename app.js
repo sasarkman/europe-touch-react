@@ -1,6 +1,3 @@
-// Load path module for filepaths
-const path = require('path');
-
 // Load HTTP module
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -16,6 +13,9 @@ app.use(bodyParser.json());
 
 // Module for credentials loading
 require('dotenv').config();
+
+// Load path module for filepaths
+const path = require('path');
 
 // Session/cookie module
 const session = require('express-session');
@@ -71,13 +71,15 @@ app.use('/service', serviceRouter);
 
 // Define and initialize templating engine
 app.engine('spy', sprightly);
-app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'spy');
+app.set('views', path.join(__dirname, 'views'));
+
+// Expose controllers directory
+app.use(express.static(path.join(__dirname, 'controllers')));
 
 // Mongodb connection string
 //const mongo_url = "mongodb://127.0.0.1:27017/local"
 const mongo_url = process.env.MONGODB_URL;
-exports.mongo_url = mongo_url;
 
 // Express IP and port info
 const hostname = "127.0.0.1";
@@ -94,11 +96,11 @@ mongoose.connect(mongo_url, { useNewUrlParser:true, useUnifiedTopology:true }, (
 
 app.get('/', function(req, res) {
 	if(typeof(req.session.user) != "undefined") {
-		var user = req.session.user;
+		var user = req.session.user.email;
 		console.log(`${user} visited /`);
-		res.render('account', {});
+		return res.render('account', {});
 	} else {
-		res.render('login', {});
+		return res.render('login', {});
 	}
 });
 

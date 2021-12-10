@@ -17,12 +17,12 @@ var AppointmentModel = require('../models/appointment-model');
 router.route('/').
 	get(function(req, res) {
 		if(typeof(req.session.user) != "undefined") {
-			var user = req.session.user;
+			var user = req.session.user.email;
 			console.log(`${user} visited /`);
 			// res.status(200).send("Reached /!");
 			res.render('account', {});
 		} else {
-			res.render('login', {});
+			res.redirect('/account/login');
 		}
 	}
 );
@@ -32,8 +32,8 @@ router.route('/login').
 		function(req, res) {
 			// already logged in?
 			if(typeof(req.session.user) != "undefined") {
-				console.log(`Already logged in as ${req.session.user}`);
-				res.render('account', {});
+				console.log(`Already logged in as ${req.session.user.email}`);
+				res.redirect('/account');
 			} 
 			// return res.sendFile(path.join(__dirname, '../views/login.html'));
 			res.render('login', {});
@@ -52,7 +52,7 @@ router.route('/login').
 
 			// already logged in?
 			if(typeof(req.session.user) != "undefined") {
-				console.log(`Already logged in as ${req.session.user}`);
+				console.log(`Already logged in as ${req.session.user.email}`);
 				return res.send("Already logged in");
 			} 
 
@@ -68,16 +68,15 @@ router.route('/login').
 						if(err) res.send(err);
 						if(isMatch) {
 							//cookie
-							req.session.user = email;
-							req.session.id = record._id;
+							req.session.user = record;
 
-							res.render('account', {});
+							return res.redirect('/account');
 						} else {
-							res.send("Incorrect password");
+							return res.send("Incorrect password");
 						}
 					});
 				} else {
-					res.send("Account not found: " + email);
+					return res.send(`Account not found: ${email} and ${password}`);
 				}
 			});
 		}
@@ -86,13 +85,18 @@ router.route('/login').
 
 router.route('/logout').all(function(req, res) {
 	req.session.destroy();
-	res.render('login', {});
+	return res.redirect('login');
 });
 
 router.route('/createaccount').
 	get(
 		function(req, res) {
-			res.redirect("/creataccount");
+			// already logged in?
+			if(typeof(req.session.user) != "undefined") {
+				console.log(`Already logged in as ${req.session.user.email}`);
+				return res.send("Logout first");
+			}
+			return res.render("createaccount", {});
 		}
 	).
 	post(
@@ -107,8 +111,8 @@ router.route('/createaccount').
 
 			// already logged in?
 			if(typeof(req.session.user) != "undefined") {
-				console.log(`Already logged in as ${req.session.user}`);
-				res.send("Logout first");
+				console.log(`Already logged in as ${req.session.user.email}`);
+				return res.send("Logout first");
 			}
 
 			var email = req.body.email;
@@ -123,7 +127,8 @@ router.route('/createaccount').
 				} else {
 					var newAccount = new AccountModel({email, password});
 					newAccount.save();
-					res.send("all good!");
+					console.log(`account created: ${email}`);
+					res.redirect('/login');
 				}
 			})
 		}
@@ -159,16 +164,17 @@ router.route('/scheduleappointment').
 		function(req, res) {
 			// already logged in?
 			if(typeof(req.session.user) != "undefined") {
-				console.log(`Already logged in as ${req.session.user}`);
-				res.render('scheduleappointment', {});
+				console.log(`Already logged in as ${req.session.user.email}`);
+				return res.render('scheduleappointment', {});
 			} 
 			// return res.sendFile(path.join(__dirname, '../views/login.html'));
-			res.render('login', {});
+			return res.redirect('/account/login');
 		}
 	).
 	post(
 		[
-			check('date').exists().isDate()
+			check('datetime').exists().isISO8601(),
+			check('service', 'Invalid service ID').exists()
 		],
 		function(req, res) {
 			const errors = validationResult(req);
@@ -177,18 +183,32 @@ router.route('/scheduleappointment').
 			}
 
 			// make sure we're logged in
-			if(typeof(req.session.user) != "undefined") {
-				res.render('login', {});
+			if(typeof(req.session.user) == "undefined") {
+				return res.redirect('/account/login');
 			}
 
-			var email = req.session.user;
-			var date = req.body.date;
+			// Get session
+			var email = req.session.user.email;
 
-			AccountModel.count({email}, function(err, count) {
-			
-					var newAppointment = new AppointmentModel({email, date});
-					newAppointment.save();
-					res.send("appointment made!");
+			// Get body info
+			var service = new mongoose.Types.ObjectId(req.body.service);
+			var datetime = req.body.datetime;
+
+			AccountModel.count({email},
+				function(err, count) {
+					console.log(`count: ${count}`);
+					if(count == 1) {
+						var newAppointment = new AppointmentModel({email, service, datetime});
+						newAppointment.save(function(err, result) {
+							if(err) {
+								console.log(err);
+								return res.send("ERROR");
+							} else {
+								console.log(`appointment made for user ${email}`);
+								return res.redirect('/account');
+							}
+						});
+					}
 				}
 			)
 		}

@@ -1,22 +1,19 @@
 <!DOCTYPE html>
 <html>
-<script type="text/javascript" src=""></script>
+<script type="text/javascript" src="/scheduleappointment.js"></script>
 <head>
 	<title>Create Appointment Page</title>
 </head>
-<body>
-	<h1>Schedule appintment</h1>
-	<form method="post">
-		<label for="service">Type of service:</label><br>
-		<input type="text" id="service" name="service"><br>
+	<body>
+		<h1>Schedule appintment</h1>
+		<form method="post">
+			<label for="service">Type of service:</label><br>
+			<select name="service" id="services"></select><br>
 
-		<label for="date">Date:</label><br>
-		<input type="date" id="date" name="date"><br>
+			<label for="date">Date:</label><br>
+			<input type="datetime-local" id="datetime" name="datetime"><br>
 
-		<label for="time">Time:</label><br>
-		<input type="time" id="time" name="time"><br>
-
-		<input type="submit" formaction="/account/scheduleappointment" value="Schedule">
-	</form>
-</body>
+			<input type="submit" formaction="/account/scheduleappointment" value="Schedule">
+		</form>
+	</body>
 </html>

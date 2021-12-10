@@ -4,7 +4,7 @@ var SALT_WORK_FACTOR = 10;
 var Schema = mongoose.Schema;
 
 var ServiceSchema = new mongoose.Schema({
-	service: {
+	name: {
 		type: String,
 		required: true,
 		unique: true
