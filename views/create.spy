@@ -19,7 +19,7 @@
 			<label for="description">Description:</label><br>
 			<input type="description" id="description" name="description"><br>
 
-			<input type="submit" formaction="service/createservice" value="Create service">
+			<input type="submit" formaction="/service/createservice" value="Create service">
 		</form>
 	</body>
 </html>

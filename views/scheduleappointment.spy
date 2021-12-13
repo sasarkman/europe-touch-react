@@ -10,10 +10,19 @@
 			<label for="service">Type of service:</label><br>
 			<select name="service" id="services"></select><br>
 
+			<label for="duration">Duration:</label>
+			<div id="duration"></div>
+
+			<label for="price">Price:</label>
+			<div id="price"></div>
+
+			<label for="description">Description:</label>
+			<div id="description"></div><br>
+
 			<label for="date">Date:</label><br>
 			<input type="datetime-local" id="datetime" name="datetime"><br>
 
-			<input type="submit" formaction="/account/scheduleappointment" value="Schedule">
+			<input type="submit" formaction="/account/schedule" value="Schedule">
 		</form>
 	</body>
 </html>

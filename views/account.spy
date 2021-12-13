@@ -5,6 +5,8 @@
 	<title>Account Page</title>
 </head>
 	<body>
-		<a href="/account/scheduleappointment">Schedule appointment</a>
+		{{ temp }}
+
+		<a href="/account/logout">Logout</a>
 	</body>
 </html>

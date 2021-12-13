@@ -32,16 +32,10 @@ app.use(session({
 const router = express.Router();
 app.use(router);
 
-// const FileStore = require('session-file-store')(session);
-//const sessionStore = require('connect-mongodb-session')(session);
-//const cookieAuth = require('./cookie-session-authenticate');
-
-//const tokenAuth = require('./token-authenticate');
-
 // Load routes
 const accountRouter = require('./routes/account');
-// const loginRouter = require('./routes/login');
 const serviceRouter = require('./routes/service');
+const appointmentRouter = require('./routes/appointment');
 
 // Load logging module
 const logger = require('morgan');
@@ -49,11 +43,13 @@ const logger = require('morgan');
 // Load object relational model module
 const mongoose = require('mongoose');
 
+// Load template engine package
 const sprightly = require('sprightly');
 
 // Load authorization module
-const auth = require('jsonwebtoken');
-const auth_key = "3urop3t0uch";
+// const auth = require('jsonwebtoken');
+// const auth_key = "3urop3t0uch";
+const isLoggedIn = require('./auth').isLoggedIn;
 
 // Load user input validator
 const { check, validationResult } = require('express-validator');
@@ -68,6 +64,7 @@ app.use(logger('dev'));
 // app.use('/login', loginRouter);
 app.use('/account', accountRouter);
 app.use('/service', serviceRouter);
+app.use('/appointment', appointmentRouter);
 
 // Define and initialize templating engine
 app.engine('spy', sprightly);
@@ -94,14 +91,8 @@ mongoose.connect(mongo_url, { useNewUrlParser:true, useUnifiedTopology:true }, (
 	console.log("Connected to database: " + mongo_url);
 });
 
-app.get('/', function(req, res) {
-	if(typeof(req.session.user) != "undefined") {
-		var user = req.session.user.email;
-		console.log(`${user} visited /`);
-		return res.render('account', {});
-	} else {
-		return res.render('login', {});
-	}
+app.get('/', isLoggedIn, function(req, res) {
+	return res.redirect('/account');
 });
 
 module.exports = app;
