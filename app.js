@@ -71,8 +71,28 @@ app.engine('spy', sprightly);
 app.set('view engine', 'spy');
 app.set('views', path.join(__dirname, 'views'));
 
-// Expose controllers directory
-app.use(express.static(path.join(__dirname, 'controllers')));
+// Expose directories
+app.use('/controllers', express.static(path.join(__dirname, 'controllers')));
+// app.use('/js', express.static(path.join(__dirname, 'node_modules/jquery/dist')));
+// app.use('/js', express.static(path.join(__dirname, 'node_modules/jquery-ui-dist')));
+// app.use('/js', express.static(path.join(__dirname, 'node_modules/bootstrap/dist/js')));
+// app.use('/js', express.static(path.join(__dirname, 'node_modules/js-year-calendar/dist')));
+// app.use('/css', express.static(path.join(__dirname, 'node_modules/bootstrap/dist/css')));
+// app.use('/css', express.static(path.join(__dirname, 'node_modules/js-year-calendar/dist')));
+
+// app.use('/jquery.js', express.static(path.join(__dirname, 'node_modules/jquery/dist/jquery.min.js')));
+app.use('/jquery.js', express.static(path.join(__dirname, 'node_modules/jquery/dist/jquery.js')));
+// app.use('/popper.js', express.static(path.join(__dirname, 'node_modules/@popperjs/core/dist/cjs/popper.js')));
+// app.use('/jquery-ui.js', express.static(path.join(__dirname, 'node_modules/jquery-ui-dist/jquery-ui.min.js')));
+app.use('/jquery-ui.js', express.static(path.join(__dirname, 'node_modules/jquery-ui-dist/jquery-ui.js')));
+// app.use('/bootstrap.js', express.static(path.join(__dirname, 'node_modules/bootstrap/dist/js/bootstrap.bundle.min.js')));
+app.use('/bootstrap.js', express.static(path.join(__dirname, 'node_modules/bootstrap/dist/js/bootstrap.bundle.js')));
+app.use('/bootstrap.css', express.static(path.join(__dirname, 'node_modules/bootstrap/dist/css/bootstrap.min.css')));
+// app.use('/js-year-calendar.js', express.static(path.join(__dirname, 'node_modules/js-year-calendar/dist/js-year-calendar.js')));
+// app.use('/js-year-calendar.css', express.static(path.join(__dirname, 'node_modules/js-year-calendar/dist/js-year-calendar.min.css')));
+app.use('/bootstrap-calendar.js', express.static(path.join(__dirname, 'node_modules/bootstrap-calendar/js/calendar.js')));
+app.use('/bootstrap-calendar.css', express.static(path.join(__dirname, 'node_modules/bootstrap-calendar/css/calendar.css')));
+app.use('/tmpls', express.static(path.join(__dirname, 'node_modules/bootstrap-calendar/tmpls/')));
 
 // Mongodb connection string
 //const mongo_url = "mongodb://127.0.0.1:27017/local"

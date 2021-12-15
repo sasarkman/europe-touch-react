@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
-<script type="text/javascript" src="/scheduleappointment.js"></script>
+<script type="text/javascript" src="/controllers/scheduleappointment.js"></script>
 <head>
-	<title>Create Appointment Page</title>
+	<title>Create Appointment</title>
 </head>
 	<body>
 		<h1>Schedule appintment</h1>
@@ -22,7 +22,7 @@
 			<label for="date">Date:</label><br>
 			<input type="datetime-local" id="datetime" name="datetime"><br>
 
-			<input type="submit" formaction="/account/schedule" value="Schedule">
+			<input type="submit" formaction="/appointment/schedule" value="Schedule">
 		</form>
 	</body>
 </html>

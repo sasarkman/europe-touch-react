@@ -34,6 +34,7 @@ router.route('/').
 				`;
 			} else {
 				HTML = `
+					<a href="/appointment/viewall">View appointments</a><br>
 					<a href="/appointment/schedule">Schedule appointment</a><br>
 				`;
 			}

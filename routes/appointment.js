@@ -35,7 +35,8 @@ router.route('/schedule').
 				return res.status(422).json({ errors: errors.array() });
 			}
 
-			// Get session
+			// Get session info
+			var id = new mongoose.Types.ObjectId(req.session.user._id);
 			var email = req.session.user.email;
 
 			// Get body info
@@ -46,13 +47,13 @@ router.route('/schedule').
 				function(err, count) {
 					console.log(`count: ${count}`);
 					if(count == 1) {
-						var newAppointment = new AppointmentModel({email, service, datetime});
+						var newAppointment = new AppointmentModel({account:id, service, datetime});
 						newAppointment.save(function(err, result) {
 							if(err) {
 								console.log(err);
 								return res.send("ERROR");
 							} else {
-								console.log(`appointment made for user ${email}`);
+								console.log(`appointment made for email ${email}, id: ${id}`);
 								return res.redirect('/account');
 							}
 						});
@@ -69,25 +70,24 @@ router.route('/viewall').
 				auth.isLoggedIn
 			],
 			function(req, res) {
-				console.log(req.session.user);
+				// console.log(req.session.user);
 				const id = new mongoose.Types.ObjectId(req.session.user._id);
 				// const id = req.session.user._id;
 
 				if(req.session.user.admin) {
-					AppointmentModel.find({}, {_id:false}, function(err, result) {
-						if(err) res.send(err);
-						else if(result) {
-							res.status(200).json(result);
-						}
-					});
+					var query = {};
 				} else {
-					AppointmentModel.find({id: _id}, {_id:false}, function(err, result) {
-						if(err) res.send(err);
-						else if(result) {
-							res.status(200).json(result);
-						}
-					});
+					var query = {account: id};
 				}
+
+				// console.log(`query = ${query}`);
+				AppointmentModel.find(query, {_id:false}, function(err, result) {
+					if(err) res.send(err);
+					else if(result) {
+						// res.status(200).json(result);
+						res.render('appointment-viewall', {});
+					}
+				});
 
 				
 			}

@@ -4,9 +4,9 @@ var SALT_WORK_FACTOR = 10;
 var Schema = mongoose.Schema;
 
 var AppointmentSchema = new mongoose.Schema({
-	email: { 
-		type: String, 
-		required: true, 
+	account: { 
+		type: mongoose.SchemaTypes.ObjectId, 
+		required: true,
 	},
 	service: {
 		type: mongoose.SchemaTypes.ObjectId,
