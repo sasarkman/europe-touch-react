@@ -88,8 +88,73 @@ router.route('/viewall').
 						res.render('appointment-viewall', {});
 					}
 				});
+			}
+		)
 
-				
+router.route('/getall').
+		get(
+			[
+				auth.isLoggedIn
+			],
+			function(req, res) {
+				// console.log(req.session.user);
+				const id = new mongoose.Types.ObjectId(req.session.user._id);
+				// const id = req.session.user._id;
+
+				if(req.session.user.admin) {
+					var query = {};
+				} else {
+					var query = {account: id};
+				}
+
+				AppointmentModel.aggregate([
+					{
+						$match: query
+					},
+					// Join query with Accounts using foreign key 'account'
+					{
+						$lookup: {
+							from: 'accounts',
+							localField: 'account',
+							foreignField: '_id',
+							as: 'user'
+						}
+					},
+					// Convert array to object
+					{
+						$unwind: '$user'
+					},
+					// Join query with Services using foreign key 'service'
+					{
+						$lookup: {
+							from: 'services',
+							localField: 'service',
+							foreignField: '_id',
+							as: 'service'
+						}
+					},
+					// Convert array to object
+					{
+						$unwind: '$service'
+					},
+					// Define final output
+					{
+						$project: {
+							'_id': 0,
+							'user.email': 1,
+							'service.name': 1,
+							'start': '$datetime',
+							'approved': '$approved',
+							'created': '$createdTimestamp'
+						}
+					},],
+					function(err, result) {
+						if(err) res.send(err);
+						else if(result) {
+							res.status(200).json(result);
+						}
+					}
+				);
 			}
 		)
 

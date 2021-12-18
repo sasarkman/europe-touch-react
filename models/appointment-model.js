@@ -7,14 +7,17 @@ var AppointmentSchema = new mongoose.Schema({
 	account: { 
 		type: mongoose.SchemaTypes.ObjectId, 
 		required: true,
+		ref: 'accounts'
 	},
 	service: {
 		type: mongoose.SchemaTypes.ObjectId,
-		required: true
+		required: true,
+		ref: 'services'
 	},
 	datetime: {
 		type: Date,
-		required: true
+		required: true,
+		ref: 'appointments',
 	},
 	createdTimestamp: {
 		type: Date,
