@@ -17,7 +17,6 @@ var AppointmentSchema = new mongoose.Schema({
 	datetime: {
 		type: Date,
 		required: true,
-		ref: 'appointments',
 	},
 	createdTimestamp: {
 		type: Date,

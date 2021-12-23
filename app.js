@@ -82,7 +82,6 @@ app.use('/fullcalendar.js', express.static(path.join(__dirname, 'node_modules/fu
 app.use('/fullcalendar.css', express.static(path.join(__dirname, 'node_modules/fullcalendar/main.css')));
 
 // Mongodb connection string
-//const mongo_url = "mongodb://127.0.0.1:27017/local"
 const mongo_url = process.env.MONGODB_URL;
 
 // Express IP and port info

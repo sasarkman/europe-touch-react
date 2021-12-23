@@ -1,19 +1,4 @@
-console.log("hi");
-
 $(document).ready(function () {
-
-
-	// var calendar = new FullCalendar.Calendar($('#calendar'), {
-	// 	initialView: 'dayGridMonth'
-	// });
-	// calendar.render();
-
-	// var calendarEl = document.getElementById('calendar');
-	// var calendar = new FullCalendar.Calendar(calendarEl, {
-	//   initialView: 'dayGridMonth'
-	// });
-	// calendar.render();
-	
 	var calendarEl = document.getElementById('calendar');
 	var calendar = new FullCalendar.Calendar(calendarEl, {
 		initialView: 'dayGridMonth',
@@ -21,46 +6,90 @@ $(document).ready(function () {
 		headerToolbar: {
 			start: 'prev,next today',
 			center: 'title',
-			end: 'dayGridDay dayGridWeek dayGridMonth'
+			end: 'timeGridDay timeGridWeek dayGridMonth'
 		},
 		navLinks: true, // can click day/week names to navigate views
 		selectable: true,
-		select: function(start, end) {
-			// Display the modal.
-			// You could fill in the start and end fields based on the parameters
-			$('.modal').modal('show');
+		eventClick: function(event) {
+			var appointment = event.event.extendedProps;
+			
+			var startTime = new Date(event.event.start).toLocaleTimeString('en-US');
+			var createdDate = new Date(appointment.created).toLocaleString('en-US');
+			var status = appointment.approved ? 'confirmed' : 'not confirmed';
 
-		},
-		eventClick: function(event, element) {
-			// Display the modal and set the values to the event values.
-			$('.modal').modal('show');
-			$('.modal').find('#title').val(event.title);
-			$('.modal').find('#starts-at').val(event.start);
-			$('.modal').find('#ends-at').val(event.end);
+			$('.modal').find('#title').html(appointment.account.name);
 
+			// Service fields
+			$('.modal').find('#service').html(appointment.service.name);
+			$('.modal').find('#service').attr('value', appointment._id);
+
+			// Service popover
+			$('#service-info').popover({content: `
+				Duration: ${appointment.service.duration}<br>
+				Price: \$${appointment.service.price}<br>
+				Description: ${appointment.service.description}
+			`, html: true});
+
+			// Appointment fields
+			$('.modal').find('#appointment').html(startTime);
+			$('#appointment-info').popover({content: `
+				Created: ${appointment.created}
+			`, html: true});
+
+			// Confirmation info
+			$('#confirmation-info').popover({content: 'Appointments will be confirmed/unconfirmed by Edina and the customer will receive a notification.', html: true});
+
+			// Define modal button click behavior
+			$('#cancel-appointment').on('click', function() {
+				disableButton('#cancel-appointment');
+				var appointmentID = appointment._id;
+				var data = { 'appointmentID': appointmentID };
+		
+				$.post(`/appointment/cancel/${appointmentID}`, data, function(result) {
+					calendar.getEventById(appointmentID).setProp('color', 'red');
+					calendar.getEventById(appointmentID).setExtendedProp('approved', false);
+		
+					enableButton('#cancel-appointment');
+				}).fail(function(error) {
+					enableButton('#cancel-appointment');
+				})
+
+				$('#event-modal').modal('hide');
+			});
+
+			// Display the modal
+			$('.modal').modal('show');
 		},
-		events: '/appointment/getall'
+		eventSources: [
+			{
+				url: '/appointment/getall/approved',
+				color: 'green'
+			},
+			{
+				url: '/appointment/getall/unapproved',
+				color: 'red'
+			}
+		],
+		eventsSet: function() {
+			// console.log(this.getEvents());
+		},
 	});
 
-	// Whenever the user clicks on the "save" button om the dialog
-	$('#save-event').on('click', function() {
-		var title = $('#title').val();
-		if (title) {
-			var eventData = {
-				title: title,
-				start: $('#starts-at').val(),
-				end: $('#ends-at').val()
-			};
-			$('#calendar').fullCalendar('renderEvent', eventData, true); // stick? = true
-		}
-		$('#calendar').fullCalendar('unselect');
+	function showButton(element) {
+		$(element).removeClass('d-none');
+	}
 
-		// Clear modal inputs
-		$('.modal').find('input').val('');
+	function hideButton(element) {
+		$(element).addClass('d-none');
+	}
 
-		// hide modal
-		$('.modal').modal('hide');
-	});
+	function enableButton(element) {
+		$(element).prop('disabled', false);
+	}
+
+	function disableButton(element) {
+		$(element).prop('disabled', true);
+	}
 
 	calendar.render();
 });

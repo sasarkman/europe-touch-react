@@ -8,13 +8,17 @@
 		<link rel="stylesheet" type="text/css" href="/bootstrap.css">
 		<link rel="stylesheet" type="text/css" href="/fullcalendar.css">
 
-		<script type="text/javascript" src="/controllers/appointment-viewall.js"></script>
+		<!-- <script type="text/javascript" src="/controllers/appointment-viewall.js"></script> -->
 
 		<title>View my appointments</title>
 	</head>
 	<body>
+		<!-- Header -->
 		<h1>View my appointments</h1>
 
+		<!-- Calndar -->
 		<div id='calendar'></div>
+
+		{{ partial }}
 	</body>
 </html>
