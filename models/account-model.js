@@ -14,6 +14,7 @@ var AccountSchema = new mongoose.Schema({
 		required: true
 	},
 	phone: {
+		// playing it safe
 		type: String,
 		required: true
 	},

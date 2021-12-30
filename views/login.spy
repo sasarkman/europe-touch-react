@@ -1,20 +1,33 @@
 <!DOCTYPE html>
 <html>
-<!-- <script type="text/javascript" src="index.js"></script> -->
+	<script type="text/javascript" src="/jquery.js"></script>
+	<script type="text/javascript" src="/jquery-validation.js"></script>
+	<script type="text/javascript" src="/bootstrap.js"></script>
+	<script type="text/javascript" src="/controllers/login.js"></script>
+	<link rel="stylesheet" type="text/css" href="/bootstrap.css">
 <head>
 	<title>Login Page</title>
 </head>
 	<body>
-		<h1>Login</h1>
-		<form method="post">
-			<label for="email">Email:</label><br>
-			<input type="text" id="email" name="email"><br>
+		<div class='container'>
+			<div class='d-flex flex-column min-vh-100 justify-content-md-center align-items-center'>
+				<h1>Login</h1>
+				<form method="post" id='login-form'>
+					<div class='form-group'>
+						<label for="email">E-mail address:</label>
+						<input type="email" class='form-control' placeholder='Enter e-mail address' id="email" name="email" aria-describedby="email-error">
+					</div>
 
-			<label for="password">Password:</label><br>
-			<input type="password" id="password" name="password"><br>
+					<div class='form-group'>
+						<label for="password">Password:</label>
+						<input type="password" class='form-control' placeholder='Enter password' id="password" name="password" aria-describedby="password-error">
+					</div>
 
-			<input type="submit" formaction="/account/login" value="Login">
-		</form>
-		<a href="/account/createaccount">create account</a>
+					<button type="submit" class="btn btn-primary" formaction="/account/login">Login</button>
+				</form>
+				
+				<a href="/account/createaccount">create account</a>
+			</div>
+		</div>
 	</body>
 </html>

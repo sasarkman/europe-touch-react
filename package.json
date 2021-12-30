@@ -25,6 +25,7 @@
     "fullcalendar": "^5.10.1",
     "jquery": "^3.6.0",
     "jquery-ui-dist": "^1.12.1",
+    "jquery-validation": "^1.19.3",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.0.14",
     "morgan": "^1.10.0",
