@@ -5,9 +5,9 @@
 	<script type="text/javascript" src="/bootstrap.js"></script>
 	<script type="text/javascript" src="/controllers/login.js"></script>
 	<link rel="stylesheet" type="text/css" href="/bootstrap.css">
-<head>
-	<title>Login Page</title>
-</head>
+	<head>
+		<title>Login Page</title>
+	</head>
 	<body>
 		<div class='container'>
 			<div class='d-flex flex-column min-vh-100 justify-content-md-center align-items-center'>

@@ -73,6 +73,7 @@ app.set('views', path.join(__dirname, 'views'));
 
 // Expose directories
 app.use('/controllers', express.static(path.join(__dirname, 'controllers')));
+app.use('/classes', express.static(path.join(__dirname, 'classes')));
 
 app.use('/jquery.js', express.static(path.join(__dirname, 'node_modules/jquery/dist/jquery.js')));
 app.use('/jquery-ui.js', express.static(path.join(__dirname, 'node_modules/jquery-ui-dist/jquery-ui.js')));

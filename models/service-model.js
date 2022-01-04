@@ -10,7 +10,7 @@ var ServiceSchema = new mongoose.Schema({
 		unique: true
 	},
 	duration: {
-		type: Number,
+		type: String,
 		required: true
 	},
 	price: {

@@ -46,8 +46,9 @@ $(document).ready(function () {
 				var data = { 'appointmentID': appointmentID };
 		
 				$.post(`/appointment/cancel/${appointmentID}`, data, function(result) {
-					calendar.getEventById(appointmentID).setProp('color', 'red');
-					calendar.getEventById(appointmentID).setExtendedProp('approved', false);
+					// calendar.getEventById(appointmentID).setProp('color', 'red');
+					calendar.getEventById(appointmentID).remove();
+					// calendar.getEventById(appointmentID).setExtendedProp('approved', false);
 		
 					enableButton('#cancel-appointment');
 				}).fail(function(error) {

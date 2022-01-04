@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+	<script type="text/javascript" src="/jquery.js"></script>
+	<script type="text/javascript" src="/bootstrap.js"></script>
+	<script type="text/javascript" src="/classes/service.js"></script>
+	<script type="text/javascript" src="/controllers/service-manage.js"></script>
+	<link rel="stylesheet" type="text/css" href="/bootstrap.css">
+	<head>
+		<title>Manage services</title>
+	</head>
+	<body>
+		<div class='container'>
+			<div class='d-flex flex-column min-vh-100 justify-content-md-center align-items-center'>
+				<h1>Manage services</h1>
+				<form>
+					<div class='form-group'>
+						<label for="services">Service:</label>
+						<select name="id" class='form-control' id="services"></select>
+					</div>
+
+					<div class='form-group'>
+						<label for="name">Service name:</label>
+						<input type="name" class='form-control' id="name" name="name">
+					</div>
+
+					<div class='form-group'>
+						<label for="duration">Duration:</label>
+						<input type="duration" class='form-control' id="duration" name="duration">
+					</div>
+
+					<div class='form-group'>
+						<label for="price">Price:</label>
+						<input type="price" class='form-control' id="price" name="price">
+					</div>
+
+					<div class='form-group'>
+						<label for="description">Description:</label>
+						<textarea type="description" class='form-control' id="description" name="description"></textarea>
+					</div>
+
+					<button type="button" class="btn btn-primary" id='save-button'>Save changes</button>
+				</form>
+			</div>
+		</div>
+	</body>
+</html>

@@ -29,8 +29,7 @@ router.route('/').
 			if(req.session.user.admin) {
 				HTML = `
 					<a href="/appointment/viewall">View appointments</a><br>
-					<a href="/service/viewall">View services</a><br>
-					<a href="/service/edit">Edit services</a><br>
+					<a href="/service/">Manage services</a><br>
 				`;
 			} else {
 				HTML = `

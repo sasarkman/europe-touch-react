@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
-<script type="text/javascript" src="/controllers/scheduleappointment.js"></script>
+<script type="text/javascript" src="/jquery.js"></script>
+<script type="text/javascript" src="/classes/service.js"></script>
+<script type="text/javascript" src="/controllers/appointment-schedule.js"></script>
 <head>
 	<title>Create Appointment</title>
 </head>

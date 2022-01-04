@@ -14,7 +14,7 @@
 			<input type="duration" id="duration" name="duration"><br>
 
 			<label for="pricee">Price:</label><br>
-			<input type="pricee" id="pricee" name="pricee"><br>
+			<input type="price" id="price" name="price"><br>
 
 			<label for="description">Description:</label><br>
 			<input type="description" id="description" name="description"><br>
