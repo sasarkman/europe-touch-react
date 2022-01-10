@@ -2,25 +2,18 @@
 <html>
 	<script type="text/javascript" src="/jquery.js"></script>
 	<script type="text/javascript" src="/bootstrap.js"></script>
-	<script type="text/javascript" src="/classes/service.js"></script>
-	<script type="text/javascript" src="/controllers/service-manage.js"></script>
 	<link rel="stylesheet" type="text/css" href="/bootstrap.css">
 	<head>
-		<title>Manage services</title>
+		<title>Create service</title>
 	</head>
 	<body>
 		<div class='container'>
 			<div class='d-flex flex-column min-vh-100 justify-content-md-center align-items-center'>
-				<h1>Manage services</h1>
-				<form>
+				<h1>Create service</h1>
+				<form method="post">
 					<div class='form-group'>
-						<label for="services">Service:</label>
-						<select name="id" class='form-control' id="services"></select>
-					</div>
-
-					<div class='form-group'>
-						<label for="name">Service name:</label>
-						<input type="name" class='form-control' id="name" name="name">
+						<label for="service">Service name:</label>
+						<input type="service" class='form-control' id="service" name="service">
 					</div>
 
 					<div class='form-group'>
@@ -35,11 +28,10 @@
 
 					<div class='form-group'>
 						<label for="description">Description:</label>
-						<textarea type="description" class='form-control' id="description" name="description"></textarea>
+						<input type="description" class='form-control' id="description" name="description">
 					</div>
 
-					<button type="button" class="btn btn-primary" id='save-button'>Save changes</button>
-					<button type="button" class="btn btn-danger" id='delete-button'>Delete</button>
+					<input type="submit" class="btn btn-primary" formaction="/service/create" value="Create service">
 				</form>
 			</div>
 		</div>

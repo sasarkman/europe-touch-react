@@ -26,13 +26,17 @@ class Service {
 	}
 
 	editService(data) {
-		// try {
-		// 	const response = await $.post('/service/edit', data);
-		// 	return response.json();
-		// } catch (err) {
-		// 	return console.log(err);
-		// }
 		return fetch('/service/edit', data)
+			.then((response) => response.json()
+			)
+			.catch((err) => {
+				console.log(err);
+			}
+		);
+	}
+
+	deleteService(data) {
+		return fetch('/service/delete', data)
 			.then((response) => response.json()
 			)
 			.catch((err) => {

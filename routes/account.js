@@ -30,6 +30,7 @@ router.route('/').
 				HTML = `
 					<a href="/appointment/viewall">View appointments</a><br>
 					<a href="/service/">Manage services</a><br>
+					<a href="/service/create">Create service</a><br>
 				`;
 			} else {
 				HTML = `
