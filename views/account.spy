@@ -1,12 +1,17 @@
 <!DOCTYPE html>
 <html>
-<script type="text/javascript" src=""></script>
+	<script type="text/javascript" src="/bootstrap.js"></script>
+	<link rel="stylesheet" type="text/css" href="/bootstrap.css">
+	<script type="text/javascript" src=""></script>
 <head>
 	<title>Account Page</title>
 </head>
-	<body>
+	<body class='d-flex flex-column min-vh-100'>
+
 		{{ temp }}
 
 		<a href="/account/logout">Logout</a>
+
+		<< partials/footer >>
 	</body>
 </html>

@@ -1,0 +1,7 @@
+<div class='container'>
+	<header class='d-flex justify-content-center py-3'>
+		<ul class='nav nav-pills'>
+			<a href='/account' class='nav-link'>Home</a>
+		</ul>
+	</header>
+</div>

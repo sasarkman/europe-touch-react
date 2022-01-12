@@ -8,26 +8,30 @@
 	<head>
 		<title>Login Page</title>
 	</head>
-	<body>
-		<div class='container'>
-			<div class='d-flex flex-column min-vh-100 justify-content-md-center align-items-center'>
-				<h1>Login</h1>
-				<form method="post" id='login-form'>
-					<div class='form-group'>
-						<label for="email">E-mail address:</label>
-						<input type="email" class='form-control' placeholder='Enter e-mail address' id="email" name="email" aria-describedby="email-error">
-					</div>
+	<body class='d-flex flex-column min-vh-100'>
+		<div class='mt-auto d-flex flex-column justify-content-center align-items-center'>
+			<h1>Login</h1>
+			<form method="post" id='login-form'>
+				<div class='form-group mb-1'>
+					<label for="email">E-mail address:</label>
+					<input type="email" class='form-control' placeholder='Enter e-mail address' id="email" name="email" aria-describedby="email-error">
+				</div>
 
-					<div class='form-group'>
-						<label for="password">Password:</label>
-						<input type="password" class='form-control' placeholder='Enter password' id="password" name="password" aria-describedby="password-error">
-					</div>
+				<div class='form-group mb-1'>
+					<label for="password">Password:</label>
+					<input type="password" class='form-control' placeholder='Enter password' id="password" name="password" aria-describedby="password-error">
+				</div>
 
+				<div class='form-group'>
 					<button type="submit" class="btn btn-primary" formaction="/account/login">Login</button>
-				</form>
-				
-				<a href="/account/createaccount">create account</a>
-			</div>
+				</div>
+			</form>
+
+			<a href="/account/createaccount">create account</a>
 		</div>
-	</body>
+	</div>
+
+	<< partials/footer >>
+
+</body>
 </html>

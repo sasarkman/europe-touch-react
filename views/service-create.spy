@@ -1,39 +1,47 @@
 <!DOCTYPE html>
 <html>
 	<script type="text/javascript" src="/jquery.js"></script>
+	<script type="text/javascript" src="/jquery-validation.js"></script>
 	<script type="text/javascript" src="/bootstrap.js"></script>
+	<script type="text/javascript" src="/controllers/service-create.js"></script>
 	<link rel="stylesheet" type="text/css" href="/bootstrap.css">
 	<head>
 		<title>Create service</title>
 	</head>
-	<body>
-		<div class='container'>
-			<div class='d-flex flex-column min-vh-100 justify-content-md-center align-items-center'>
-				<h1>Create service</h1>
-				<form method="post">
-					<div class='form-group'>
-						<label for="service">Service name:</label>
-						<input type="service" class='form-control' id="service" name="service">
-					</div>
+	<body class='d-flex flex-column min-vh-100'>
+		<div class='mt-auto d-flex flex-column justify-content-center align-items-center'>
+			<h1>Create service</h1>
+			<form method="post" id='main-form'>
+				<div class='form-group mb-1'>
+					<label for="name">Service name:</label>
+					<input class='form-control' id="name" name="name">
+				</div>
 
-					<div class='form-group'>
-						<label for="duration">Duration:</label>
-						<input type="duration" class='form-control' id="duration" name="duration">
-					</div>
+				<div class='form-group mb-1'>
+					<label for="duration">Duration:</label>
+					<input class='form-control' id="duration" name="duration">
+				</div>
 
-					<div class='form-group'>
-						<label for="price">Price:</label>
-						<input type="price" class='form-control' id="price" name="price">
+				<div class='form-group mb-1'>
+					<label for="price">Price:</label>
+					<div class="input-group">
+						<div class="input-group-prepend">
+							<span class="input-group-text">$</span>
+						</div>
+						<input class='form-control' id="price" name="price">
 					</div>
+				</div>
 
-					<div class='form-group'>
-						<label for="description">Description:</label>
-						<input type="description" class='form-control' id="description" name="description">
-					</div>
+				<div class='form-group mb-1'>
+					<label for="description">Description:</label>
+					<input class='form-control' id="description" name="description">
+				</div>
 
-					<input type="submit" class="btn btn-primary" formaction="/service/create" value="Create service">
-				</form>
-			</div>
+				<input type="submit" class="btn btn-primary" formaction="/service/create" value="Create service">
+			</form>
 		</div>
+
+		<< partials/footer >>
+
 	</body>
 </html>

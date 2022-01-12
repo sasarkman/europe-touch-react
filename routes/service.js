@@ -40,22 +40,25 @@ router.route('/create').
 	post(
 		[
 			auth.isAdmin,
-			check('service', 'Invalid service name specified').exists().isString(),
-			check('duration', 'Invalid duration specified').exists().isString(),
-			check('price', 'Invalid price specified').exists().isString(),
-			check('description', 'Invalid service description specified').exists().isString(),
+			check('name', 'Invalid service name specified').notEmpty().isString(),
+			check('duration', 'Invalid duration specified').notEmpty().isString(),
+			check('price', 'Invalid price specified').notEmpty().isString(),
+			check('description', 'Invalid service description specified').notEmpty().isString(),
 		], function(req, res) {
 			const errors = validationResult(req);
 			if(!errors.isEmpty()) {
 				return res.status(422).json({ errors: errors.array() });
 			}
 
-			var name = req.body.service;
+			var name = req.body.name;
 			var duration = req.body.duration;
 			var price = req.body.price;
 			var description = req.body.description;
 
-			var new_service = new ServiceModel({name, duration, price, description});
+			var params = {name, duration, price, description};
+			console.log(params);
+
+			var new_service = new ServiceModel(params);
 			new_service.save(function(err, result) {
 				if(err) {
 					console.log(err);
@@ -73,8 +76,8 @@ router.route('/delete').
 	post(
 		[
 			auth.isAdmin,
-			check('id', 'Invalid service ID').exists(),
-			check('name', 'Invalid service name').exists()
+			check('id', 'Invalid service ID').notEmpty(),
+			check('name', 'Invalid service name').notEmpty()
 		],
 		function(req, res) {
 			const errors = validationResult(req);
@@ -140,11 +143,11 @@ router.route('/edit').
 	post(
 		[
 			auth.isAdmin,
-			check('id', 'Invalid input').exists(),
-			check('name', 'Invalid service name').exists(),
-			check('duration', 'Invalid duration').exists(),
-			check('price', 'Invalid price').exists(),
-			check('description', 'Invalid service description').exists(),
+			check('id', 'Invalid input').notEmpty(),
+			check('name', 'Invalid service name').notEmpty(),
+			check('duration', 'Invalid duration').notEmpty(),
+			check('price', 'Invalid price').notEmpty(),
+			check('description', 'Invalid service description').notEmpty(),
 		],
 		function(req, res) {
 			const errors = validationResult(req);

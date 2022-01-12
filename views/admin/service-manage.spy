@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<script type="text/javascript" src="/jquery.js"></script>
+	<script type="text/javascript" src="/jquery-validation.js"></script>
 	<script type="text/javascript" src="/bootstrap.js"></script>
 	<script type="text/javascript" src="/classes/service.js"></script>
 	<script type="text/javascript" src="/controllers/service-manage.js"></script>
@@ -8,40 +9,46 @@
 	<head>
 		<title>Manage services</title>
 	</head>
-	<body>
-		<div class='container'>
-			<div class='d-flex flex-column min-vh-100 justify-content-md-center align-items-center'>
-				<h1>Manage services</h1>
-				<form>
-					<div class='form-group'>
-						<label for="services">Service:</label>
-						<select name="id" class='form-control' id="services"></select>
-					</div>
+	<body class='d-flex flex-column min-vh-100'>
+		<div class='mt-auto d-flex flex-column justify-content-center align-items-center'>
+			<h1>Manage services</h1>
+			<form id='main-form'>
+				<div class='form-group'>
+					<label for="services">Service:</label>
+					<select name="id" class='form-control' id="services"></select>
+				</div>
 
-					<div class='form-group'>
-						<label for="name">Service name:</label>
-						<input type="name" class='form-control' id="name" name="name">
-					</div>
+				<div class='form-group mb-1'>
+					<label for="name">Service name:</label>
+					<input type="name" class='form-control' id="name" name="name">
+				</div>
 
-					<div class='form-group'>
-						<label for="duration">Duration:</label>
-						<input type="duration" class='form-control' id="duration" name="duration">
-					</div>
+				<div class='form-group mb-1'>
+					<label for="duration">Duration:</label>
+					<input type="duration" class='form-control' id="duration" name="duration">
+				</div>
 
-					<div class='form-group'>
-						<label for="price">Price:</label>
-						<input type="price" class='form-control' id="price" name="price">
+				<div class='form-group mb-1'>
+					<label for="price">Price:</label>
+					<div class="input-group">
+						<div class="input-group-prepend">
+							<span class="input-group-text">$</span>
+						</div>
+						<input class='form-control' id="price" name="price">
 					</div>
+				</div>
 
-					<div class='form-group'>
-						<label for="description">Description:</label>
-						<textarea type="description" class='form-control' id="description" name="description"></textarea>
-					</div>
+				<div class='form-group mb-1'>
+					<label for="description">Description:</label>
+					<textarea type="description" class='form-control' id="description" name="description"></textarea>
+				</div>
 
-					<button type="button" class="btn btn-primary" id='save-button'>Save changes</button>
-					<button type="button" class="btn btn-danger" id='delete-button'>Delete</button>
-				</form>
-			</div>
+				<button type="button" class="btn btn-primary" id='save-button'>Save changes</button>
+				<button type="button" class="btn btn-danger" id='delete-button'>Delete</button>
+			</form>
 		</div>
+
+		<< partials/footer >>
+
 	</body>
 </html>

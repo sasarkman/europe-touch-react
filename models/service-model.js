@@ -3,6 +3,8 @@ var bcrypt = require('bcrypt');
 var SALT_WORK_FACTOR = 10;
 var Schema = mongoose.Schema;
 
+var AppointmentSchema = require('./appointment-model');
+
 var ServiceSchema = new mongoose.Schema({
 	name: {
 		type: String,
@@ -33,14 +35,32 @@ ServiceSchema.pre('deleteOne', function(next) {
 	const id = this.getQuery()['_id'];
 	const name = this.getQuery()['name'];
 	console.log(`Deleting service: ${name}, ID: ${id}`);
+
+
+
 	next();
 });
 
-ServiceSchema.post('deleteOne', function(next) {
+ServiceSchema.post('deleteOne', function(doc, next) {
 	const id = this.getQuery()['_id'];
 	const name = this.getQuery()['name'];
 	console.log(`Deleted service: ${name}, ID: ${id}`);
-	next();
+
+	// TODO: deletes
+	// delete all appointments
+	// AppointmentSchema.deleteMany({service: id});
+
+	console.log(`Deleting appointments tied to this service`);
+
+	AppointmentSchema.deleteMany({service: id}, function(err, result) {
+		if(err) next(err);
+		else {
+			console.log(`Deleted ${result.deletedCount} appointments`);
+			next();
+		}
+	})
+
+	// next();
 });
 
 

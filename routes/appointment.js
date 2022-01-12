@@ -20,14 +20,14 @@ router.route('/schedule').
 			auth.isLoggedIn
 		],
 		function(req, res) {
-			return res.render('scheduleappointment', {});
+			return res.render('appointment-schedule', {});
 		}
 	).
 	post(
 		[
 			auth.isLoggedIn,
-			check('datetime').exists().isISO8601(),
-			check('service', 'Invalid service ID').exists()
+			check('datetime').notEmpty().isISO8601(),
+			check('service', 'Invalid service ID').notEmpty()
 		],
 		function(req, res) {
 			const errors = validationResult(req);
@@ -100,7 +100,7 @@ router.route('/getall/:type?').
 		get(
 			[
 				auth.isLoggedIn,
-				check('type', 'Invalid input').exists()
+				check('type', 'Invalid input').notEmpty()
 			],
 			function(req, res) {
 				// console.log(req.session.user);
@@ -202,8 +202,8 @@ router.route('/modify/:field/:value')
 	.post(
 		[
 			auth.isAdmin,
-			check('field', 'Invalid input').exists(),
-			check('appointmentID', 'Invalid appointment').exists()
+			check('field', 'Invalid input').notEmpty(),
+			check('appointmentID', 'Invalid appointment').notEmpty()
 		], 
 		function(req, res) {
 			const errors = validationResult(req);
@@ -237,7 +237,7 @@ router.route('/modify/:field/:value')
 router.route('/cancel/:appointmentID')
 	.post([
 		auth.isLoggedIn,
-		check('appointmentID', 'Invalid input').exists()
+		check('appointmentID', 'Invalid input').notEmpty()
 	], function(req, res) {
 		const errors = validationResult(req);
 		if(!errors.isEmpty()) {

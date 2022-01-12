@@ -54,8 +54,8 @@ router.route('/login').
 	post(
 		[
 			auth.isNotLoggedIn,
-			check('email', 'Invalid e-mail address').exists().isEmail(),
-			check('password', 'Password was empty').exists(),
+			check('email', 'Invalid e-mail address').isEmail(),
+			check('password', 'Password was empty').notEmpty(),
 		],
 		function(req, res) {
 			const errors = validationResult(req);
@@ -100,14 +100,14 @@ router.route('/createaccount').
 			auth.isNotLoggedIn
 		],
 		function(req, res) {
-			return res.render("createaccount", {});
+			return res.render("account-create", {});
 		}
 	).
 	post(
 		[
 			auth.isNotLoggedIn,
-			check('email', 'Invalid e-mail address').exists().isEmail(),
-			check('password', 'Password was empty').exists()
+			check('email', 'Invalid e-mail address').isEmail(),
+			check('password', 'Password was empty').notEmpty()
 		], function(req, res) {
 			const errors = validationResult(req);
 			if(!errors.isEmpty()) {
@@ -136,8 +136,8 @@ router.route('/createaccount').
 router.route('/deleteaccount').
 	post(
 		[
-			check('email', 'Invalid e-mail address').exists().isEmail(),
-			check('password', 'Password was empty').exists(),
+			check('email', 'Invalid e-mail address').isEmail(),
+			check('password', 'Password was empty').notEmpty(),
 		], function(req, res) {
 			// var email = req.body.email;
 			// var password = req.body.password;
