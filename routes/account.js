@@ -28,14 +28,14 @@ router.route('/').
 
 			if(req.session.user.admin) {
 				HTML = `
-					<a href="/appointment/viewall">View appointments</a><br>
-					<a href="/service/">Manage services</a><br>
-					<a href="/service/create">Create service</a><br>
+					<a href="/appointment/viewall">View appointments</a>
+					<a href="/service/">Manage services</a>
+					<a href="/service/create">Create service</a>
 				`;
 			} else {
 				HTML = `
-					<a href="/appointment/viewall">View appointments</a><br>
-					<a href="/appointment/schedule">Schedule appointment</a><br>
+					<a href="/appointment/viewall">View appointments</a>
+					<a href="/appointment/schedule">Schedule appointment</a>
 				`;
 			}
 			res.render('account', { temp: HTML });

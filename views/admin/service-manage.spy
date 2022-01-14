@@ -10,10 +10,11 @@
 		<title>Manage services</title>
 	</head>
 	<body class='d-flex flex-column min-vh-100'>
+		<< partials/header >>
 		<div class='mt-auto d-flex flex-column justify-content-center align-items-center'>
 			<h1>Manage services</h1>
 			<form id='main-form'>
-				<div class='form-group'>
+				<div class='form-group mb-1'>
 					<label for="services">Service:</label>
 					<select name="id" class='form-control' id="services"></select>
 				</div>

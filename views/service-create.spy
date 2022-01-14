@@ -9,6 +9,7 @@
 		<title>Create service</title>
 	</head>
 	<body class='d-flex flex-column min-vh-100'>
+		<< partials/header >>
 		<div class='mt-auto d-flex flex-column justify-content-center align-items-center'>
 			<h1>Create service</h1>
 			<form method="post" id='main-form'>
@@ -40,8 +41,6 @@
 				<input type="submit" class="btn btn-primary" formaction="/service/create" value="Create service">
 			</form>
 		</div>
-
 		<< partials/footer >>
-
 	</body>
 </html>

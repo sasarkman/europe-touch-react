@@ -29,9 +29,7 @@
 
 			<a href="/account/createaccount">create account</a>
 		</div>
-	</div>
 
-	<< partials/footer >>
-
-</body>
+		<< partials/footer >>
+	</body>
 </html>

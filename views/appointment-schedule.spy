@@ -9,30 +9,32 @@
 		<title>Create Appointment</title>
 	</head>
 	<body class='d-flex flex-column min-vh-100'>
+		<< partials/header >>
 		<div class='mt-auto d-flex flex-column justify-content-center align-items-center'>
 			<h1>Schedule appintment</h1>
 			<form method="post">
-				<div class='form-group'>
+				<div class='form-group mb-1'>
 					<label for="service">Type of service:</label>
-					<select class='form-control' name="service" id="services"></select>
+					<select class='form-control' name="service" id="services">
+					</select>
 				</div>
 
-				<div class='form-group'>
+				<div class='form-group mb-1'>
 					<label for="duration">Duration:</label>
-					<div class='form-control' id="duration"></div>
+					<div class='form-control' id="duration" readonly></div>
 				</div>
 
-				<div class='form-group'>
+				<div class='form-group mb-1'>
 					<label for="price">Price:</label>
-					<div class='form-control' id="price"></div>
+					<div class='form-control' id="price" readonly></div>
 				</div>
 
-				<div class='form-group'>
+				<div class='form-group mb-1'>
 					<label for="description">Description:</label>
-					<div class='form-control' id="description"></div>
+					<div class='form-control' id="description" readonly></div>
 				</div>
 
-				<div class='form-group'>
+				<div class='form-group mb-1'>
 					<label for="date">Date:</label>
 					<input type="datetime-local" class='form-control' id="datetime" name="datetime">
 				</div>
@@ -40,8 +42,6 @@
 				<input type="submit" class="btn btn-primary" formaction="/appointment/schedule" value="Schedule">
 			</form>
 		</div>
-
 		<< partials/footer >>
-
 	</body>
 </html>

@@ -11,10 +11,11 @@
 			$('[data-bs-toggle="popover"]').popover()
 		})
 	</script>
-<head>
-	<title>Create Account</title>
-</head>
+	<head>
+		<title>Create Account</title>
+	</head>
 	<body class='d-flex flex-column min-vh-100'>
+		<!-- << partials/header >> -->
 		<div class='mt-auto d-flex flex-column justify-content-center align-items-center'>
 			<h1>Create Account</h1>
 			<form method="post" id='main-form'>

@@ -1,24 +1,24 @@
 <html>
+	<script type="text/javascript" src="/jquery.js"></script>
+	<script type="text/javascript" src="/jquery-ui.js"></script>
+	<script type="text/javascript" src="/bootstrap.js"></script>
+	<script type="text/javascript" src="/fullcalendar.js"></script>
+	<script type="text/javascript" src="/classes/appointment.js"></script>
+
+	<link rel="stylesheet" type="text/css" href="/bootstrap.css">
+	<link rel="stylesheet" type="text/css" href="/fullcalendar.css">
+
 	<head>
-		<script type="text/javascript" src="/jquery.js"></script>
-		<script type="text/javascript" src="/jquery-ui.js"></script>
-		<script type="text/javascript" src="/bootstrap.js"></script>
-		<script type="text/javascript" src="/fullcalendar.js"></script>
-
-		<link rel="stylesheet" type="text/css" href="/bootstrap.css">
-		<link rel="stylesheet" type="text/css" href="/fullcalendar.css">
-
-		<h1 class='text-center'>View my appointments</h1>
+		<title>View appointments</title>
 	</head>
 	<body class='d-flex flex-column min-vh-100'>
-		<div class='px-5 pb-5'>
+		<< partials/header >>
+		<div class='p-5'>
 			<!-- Calendar -->
 			<div id='calendar'></div>
 
 			{{ partial }}
 		</div>
-
 		<< partials/footer >>
-
 	</body>
 </html>

@@ -70,37 +70,19 @@ router.route('/viewall').
 				auth.isLoggedIn
 			],
 			function(req, res) {
-				// console.log(req.session.user);
-				const id = new mongoose.Types.ObjectId(req.session.user._id);
-				// const id = req.session.user._id;
-
 				var admin = req.session.user.admin;
+				var HTML = `<< partials/appointment-viewall >>`;
+				
+				if(admin) HTML = `<< partials/admin/appointment-viewall >>`;
 
-				if(admin) {
-					var query = {};
-				} else {
-					var query = {account: id};
-				}
-
-				// console.log(`query = ${query}`);
-				AppointmentModel.find(query, {_id:false}, function(err, result) {
-					if(err) res.send(err);
-					else if(result) {
-						var HTML = `<< partials/appointment-viewall >>`;
-						
-						if(admin) HTML = `<< partials/admin/appointment-viewall >>`;
-
-						res.render('appointment-viewall', { partial: HTML });
-					}
-				});
+				res.render('appointment-viewall', { partial: HTML });
 			}
 		)
 
-router.route('/getall/:type?').
+router.route('/getall/').
 		get(
 			[
 				auth.isLoggedIn,
-				check('type', 'Invalid input').notEmpty()
 			],
 			function(req, res) {
 				// console.log(req.session.user);
@@ -127,7 +109,9 @@ router.route('/getall/:type?').
 				}
 
 				var admin = req.session.user.admin;
-				var type = req.params.type;
+
+				// Appointment type may come into request inside a query payload
+				var type =  req.query.t;
 
 				// Construct a different query based on user type
 				if(admin) {
@@ -144,15 +128,19 @@ router.route('/getall/:type?').
 
 				// Define the type of appointment to retrieve
 				switch(type) {
-					case 'unapproved':
-						query.approved = false;
-						break;
-					case 'approved':
+					// Query approved appointments
+					case 'a':
 						query.approved = true;
+						break;
+					// Query unapproved appointments
+					case 'u':
+						query.approved = false;
 						break;
 					default:
 						break;
 				}
+
+				console.log(`Type: ${type}`);
 
 				AppointmentModel.aggregate([
 					{
@@ -198,31 +186,65 @@ router.route('/getall/:type?').
 			}
 		)
 
-router.route('/modify/:field/:value')
+// Note: Probably not an unsafe route so commenting for now
+// router.route('/modify')
+// 	.post(
+// 		[
+// 			auth.isAdmin,
+// 			check('f', 'Invalid input').notEmpty(),
+// 			check('v', 'Invalid input').notEmpty(),
+// 			check('i', 'Invalid input').notEmpty()
+// 		], 
+// 		function(req, res) {
+// 			const errors = validationResult(req);
+// 			if(!errors.isEmpty()) {
+// 				return res.status(422).json({ errors: errors.array() });
+// 			}
+
+// 			var appointmentID = req.body.i;
+// 			var id = new mongoose.Types.ObjectId(appointmentID);
+// 			var query = { _id: id };
+
+// 			const field = req.body.f;
+// 			const value = req.body.v;
+			
+// 			console.log(`App: ${appointmentID}, changing ${field} to ${value}`);
+// 			AppointmentModel.findByIdAndUpdate(id,
+// 				{
+// 					$set: {
+// 						[field]: value
+// 					}
+// 				},
+// 				function(err, result) {
+// 					if(err) return res.send(err);
+// 					else return res.send(result);
+// 				}
+// 			);
+			
+// 		}
+// 	);
+
+router.route('/approve')
 	.post(
 		[
 			auth.isAdmin,
-			check('field', 'Invalid input').notEmpty(),
-			check('appointmentID', 'Invalid appointment').notEmpty()
-		], 
+			check('i', 'Invalid input').notEmpty()
+		],
 		function(req, res) {
 			const errors = validationResult(req);
 			if(!errors.isEmpty()) {
 				return res.status(422).json({ errors: errors.array() });
 			}
 
-			var appointmentID = req.body.appointmentID;
-			var id = new mongoose.Types.ObjectId(appointmentID);
+			var id = new mongoose.Types.ObjectId(req.body.i);
 			var query = { _id: id };
-
-			const field = req.params.field;
-			const value = req.params.value;
 			
-			console.log(`App: ${appointmentID}, changing ${field} to ${value}`);
+			console.log(query);
+
 			AppointmentModel.findByIdAndUpdate(id,
 				{
 					$set: {
-						[field]: value
+						'approved': true
 					}
 				},
 				function(err, result) {
@@ -234,10 +256,42 @@ router.route('/modify/:field/:value')
 		}
 	);
 
-router.route('/cancel/:appointmentID')
+router.route('/unapprove')
+	.post(
+		[
+			auth.isAdmin,
+			check('i', 'Invalid input').notEmpty()
+		],
+		function(req, res) {
+			const errors = validationResult(req);
+			if(!errors.isEmpty()) {
+				return res.status(422).json({ errors: errors.array() });
+			}
+
+			var id = new mongoose.Types.ObjectId(req.body.i);
+			var query = { _id: id };
+
+			console.log(query);
+			
+			AppointmentModel.findByIdAndUpdate(id,
+				{
+					$set: {
+						'approved': false
+					}
+				},
+				function(err, result) {
+					if(err) return res.send(err);
+					else return res.send(result);
+				}
+			);
+			
+		}
+	);
+
+router.route('/cancel')
 	.post([
 		auth.isLoggedIn,
-		check('appointmentID', 'Invalid input').notEmpty()
+		check('i', 'Invalid input').notEmpty()
 	], function(req, res) {
 		const errors = validationResult(req);
 		if(!errors.isEmpty()) {
@@ -245,7 +299,7 @@ router.route('/cancel/:appointmentID')
 		}
 
 		var admin = req.session.user.admin;
-		var appointmentID = new mongoose.Types.ObjectId(req.params.appointmentID);
+		var appointmentID = new mongoose.Types.ObjectId(req.body.i);
 
 		var query = {
 			_id: appointmentID
@@ -258,6 +312,17 @@ router.route('/cancel/:appointmentID')
 			var userID = new mongoose.Types.ObjectId(req.session.user._id);
 			query.account = userID;
 		}
+
+		// Was this appointment approved?
+		AppointmentModel.findOne(query, function(err, result) {
+			if(err) console.log("Failure getting appointment");
+			else {
+				console.log(`Appointment status: ${result.approved}`);
+				if(result.approved) {
+					// send SMS notification
+				}
+			}
+		});
 
 		AppointmentModel.deleteOne(query, function(err, result) {
 			if(err) return res.send(err);

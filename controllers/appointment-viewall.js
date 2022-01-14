@@ -1,4 +1,7 @@
-$(document).ready(function () {
+$(function () {
+	var eventModal = $('#event_modal');
+	var confirmCancelModal = $("#confirmCancelModal");
+
 	var calendarEl = document.getElementById('calendar');
 	var calendar = new FullCalendar.Calendar(calendarEl, {
 		initialView: 'dayGridMonth',
@@ -17,11 +20,11 @@ $(document).ready(function () {
 			var createdDate = new Date(appointment.created).toLocaleString('en-US');
 			var status = appointment.approved ? 'confirmed' : 'not confirmed';
 
-			$('.modal').find('#title').html(appointment.account.name);
+			eventModal.find('#title').html(appointment.account.name);
 
 			// Service fields
-			$('.modal').find('#service').html(appointment.service.name);
-			$('.modal').find('#service').attr('value', appointment._id);
+			eventModal.find('#service').html(appointment.service.name);
+			eventModal.find('#service').attr('value', appointment._id);
 
 			// Service popover
 			$('#service-info').popover({content: `
@@ -31,7 +34,7 @@ $(document).ready(function () {
 			`, html: true});
 
 			// Appointment fields
-			$('.modal').find('#appointment').html(startTime);
+			eventModal.find('#appointment').html(startTime);
 			$('#appointment-info').popover({content: `
 				Created: ${appointment.created}
 			`, html: true});
@@ -40,34 +43,57 @@ $(document).ready(function () {
 			$('#confirmation-info').popover({content: 'Appointments will be confirmed/unconfirmed by Edina and the customer will receive a notification.', html: true});
 
 			// Define modal button click behavior
-			$('#cancel-appointment').on('click', function() {
-				disableButton('#cancel-appointment');
-				var appointmentID = appointment._id;
-				var data = { 'appointmentID': appointmentID };
-		
-				$.post(`/appointment/cancel/${appointmentID}`, data, function(result) {
-					// calendar.getEventById(appointmentID).setProp('color', 'red');
-					calendar.getEventById(appointmentID).remove();
-					// calendar.getEventById(appointmentID).setExtendedProp('approved', false);
-		
-					enableButton('#cancel-appointment');
-				}).fail(function(error) {
-					enableButton('#cancel-appointment');
-				})
+			$('#cancel_appointment').on('click', function() {
+				// $('#confirm_cancel_modal').modal('show');
 
-				$('#event-modal').modal('hide');
+				const modal = new Promise(function(resolve, reject){
+					$('#confirm_cancel_modal').modal('show');
+					$('#confirm_cancel_modal .btn-danger').on('click', function () {
+						disableButton('#confirm_cancel');
+						resolve("user clicked yes");
+					});
+					$('#confirm_cancel_modal .btn-ok').on('click', function () {
+						reject("user clicked cancel");
+					});
+				}).then(function (val) {
+					console.log(val)
+					var appointmentID = appointment._id;
+					const settings = {
+						method: 'POST',
+						headers: {
+							'Accept': 'application/json',
+							'Content-Type': 'application/json',
+						},
+						body: JSON.stringify({
+							i: appointmentID,
+						})
+					}
+					new Appointment().cancelAppointment(settings).then(() => {
+						// remove event from calendar
+						calendar.getEventById(appointmentID).remove();
+						$('#confirm_cancel_modal').modal('toggle');
+					});
+				}).catch(function (err) {
+					console.log(err)
+				});
 			});
 
 			// Display the modal
-			$('.modal').modal('show');
+			eventModal.modal('show');
 		},
 		eventSources: [
 			{
-				url: '/appointment/getall/approved',
+				url: '/appointment/getall/',
+				extraParams: {
+					't': 'a'
+				},
 				color: 'green'
 			},
 			{
-				url: '/appointment/getall/unapproved',
+				url: '/appointment/getall/',
+				extraParams: {
+					't': 'u'
+				},
 				color: 'red'
 			}
 		],
@@ -75,6 +101,13 @@ $(document).ready(function () {
 			// console.log(this.getEvents());
 		},
 	});
+
+	// Reset button states when modal closes
+	$('.modal').on('hide.bs.modal', function() {
+		enableButton('#confirm-appointment');
+		enableButton('#unconfirm-appointment');
+		enableButton('#confirm_cancel');
+	})
 
 	function showButton(element) {
 		$(element).removeClass('d-none');

@@ -3,14 +3,15 @@
 	<script type="text/javascript" src="/bootstrap.js"></script>
 	<link rel="stylesheet" type="text/css" href="/bootstrap.css">
 	<script type="text/javascript" src=""></script>
-<head>
-	<title>Account Page</title>
-</head>
+	<head>
+		<title>Account Page</title>
+	</head>
 	<body class='d-flex flex-column min-vh-100'>
+		<< partials/header >>
 
-		{{ temp }}
-
-		<a href="/account/logout">Logout</a>
+		<div class="container d-flex flex-column h-100">
+			{{ temp }}
+		</div>
 
 		<< partials/footer >>
 	</body>
