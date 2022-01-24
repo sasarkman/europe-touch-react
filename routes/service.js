@@ -40,14 +40,11 @@ router.route('/create').
 	post(
 		[
 			auth.isAdmin,
-			check('name', 'Invalid service name specified').notEmpty().isString(),
-			check('duration', 'Invalid duration specified').notEmpty().isString(),
-			check('price', 'Invalid price specified').notEmpty().isString(),
-			check('description', 'Invalid service description specified').notEmpty().isString(),
+			check(['name', 'duration', 'price', 'description']).notEmpty().isString(),
 		], function(req, res) {
 			const errors = validationResult(req);
 			if(!errors.isEmpty()) {
-				return res.status(422).json({ errors: errors.array() });
+				return res.status(422).json({ msg: 'Invalid input' });
 			}
 
 			var name = req.body.name;
@@ -61,11 +58,14 @@ router.route('/create').
 			var new_service = new ServiceModel(params);
 			new_service.save(function(err, result) {
 				if(err) {
-					console.log(err);
-					return res.status(422).json({error: 'duplicate service'});
+					if(err.code === 11000) {
+						res.status(400).json({ msg: 'This service already exists.'});
+					} else {
+						res.status(400).json({ msg: 'Bad request'});
+					}
 				} else {
 					console.log(`service created: ${name}`);
-					return res.status(202).json(`service created: ${name}`);
+					return res.status(200).json({ msg: `Service created!` });
 				}
 			});
 		}
@@ -76,26 +76,26 @@ router.route('/delete').
 	post(
 		[
 			auth.isAdmin,
-			check('id', 'Invalid service ID').notEmpty(),
-			check('name', 'Invalid service name').notEmpty()
+			check('id').custom(value => {
+				return ObjectId.isValid(value);
+			}),
+			check('name').notEmpty(),
 		],
 		function(req, res) {
 			const errors = validationResult(req);
 			if(!errors.isEmpty()) {
-				return res.status(422).json({ errors: errors.array() });
+				return res.status(422).json({ msg: 'Invalid input' });
 			}
 
 			const id = new mongoose.Types.ObjectId(req.body.id);
 			const name = req.body.name;
 			const query = {
 				_id: id,
-				// not ideal
-				name: name
 			}
 
-			ServiceModel.deleteOne(query, function(err, result) {
-				if(err) res.send(err);
-				else res.send(result);
+			ServiceModel.findByIdAndRemove(query, function(err, result) {
+				if(err || !result) return res.status(400).json({ msg: `Failed to delete service.`});
+				else return res.status(200).json({ msg: `Service deleted: ${name}`});
 			});
 		}
 	)
@@ -108,9 +108,8 @@ router.route('/getservices').
 		function(req, res) {
 			// Look up all records and return the records' "name" and "_id" fields
 			ServiceModel.find({}, '_id name', function(err, result) {
-				if(result) {
-					return res.status(200).json(result);
-				}
+				if(err || !result) return res.status(400).json({ msg: `Failed to retrieve services.`});
+				else return res.status(200).json({ msg: 'Successfully retrieved services', data: result});
 			});
 		}
 	)
@@ -118,24 +117,26 @@ router.route('/getservices').
 router.route('/getservice/:id').
 	get(
 		[
-			auth.isLoggedIn
+			auth.isLoggedIn,
+			check('id').custom(value => {
+				return ObjectId.isValid(value);
+			}),
 		],
 		function(req, res) {
-			// console.log(req.params);
+			const errors = validationResult(req);
+			if(!errors.isEmpty()) {
+				return res.status(422).json({ msg: 'Invalid input' });
+			}
 
 			const id = req.params.id;
 
-			if(ObjectId.isValid(id)) {
-				// Look up all records and return the records' "name" and "_id" fields
-				ServiceModel.find({_id: id}, {'_id': false}, function(err, result) {
-					if(err) console.log(err);
-					if(result) {
-						return res.status(200).json(result);
-					}
-				});
-			} else {
-				return res.status(404).send("Bad input");
-			}
+			ServiceModel.find({_id: id}, {'_id': false}, function(err, result) {
+				if(err) res.status(400).json({ msg: 'Failed to get service.'})
+				if(result) {
+					return res.status(200).json({ msg: 'Successfully retrieved service!', data: result });
+				}
+			});
+
 		}
 	)
 
@@ -143,16 +144,15 @@ router.route('/edit').
 	post(
 		[
 			auth.isAdmin,
-			check('id', 'Invalid input').notEmpty(),
-			check('name', 'Invalid service name').notEmpty(),
-			check('duration', 'Invalid duration').notEmpty(),
-			check('price', 'Invalid price').notEmpty(),
-			check('description', 'Invalid service description').notEmpty(),
+			check('id').custom(value => {
+				return ObjectId.isValid(value);
+			}),
+			check(['name', 'duration', 'price', 'description']).notEmpty(),
 		],
 		function(req, res) {
 			const errors = validationResult(req);
 			if(!errors.isEmpty()) {
-				return res.status(422).json({ errors: errors.array() });
+				return res.status(422).json({ msg: 'Invalid input' });
 			}
 
 			const id = new mongoose.Types.ObjectId(req.body.id);
@@ -170,9 +170,8 @@ router.route('/edit').
 			}
 
 			ServiceModel.findByIdAndUpdate(id, query, {new:true}, function (err, result) {
-				if(err) return res.send(err);
-				else return res.send(result);
-				// else return res.redirect(req.get('referer'));
+				if(err || !result) return res.status(400).json({ msg: 'Failed to save changes.'});
+				else return res.status(200).json({ msg: 'Changes saved!'});
 			})
 		}
 	)

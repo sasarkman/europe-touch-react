@@ -32,12 +32,13 @@
 </div>
 
 <!-- Delete confirm modal -->
-<div class="modal fade" id="confirm_cancel_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade" id="confirm_cancel_modal" tabindex="-1" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 Deleting appointment
-            </div>
+				<div class="alert d-none" role="alert" id="alert"></div>
+			</div>
             <div class="modal-body">
                 Are you sure?
             </div>

@@ -4,6 +4,10 @@
 	<script type="text/javascript" src="/jquery-validation.js"></script>
 	<script type="text/javascript" src="/bootstrap.js"></script>
 	<script type="text/javascript" src="/controllers/login.js"></script>
+
+	<script type="text/javascript" src="/scripts/api.js"></script>
+	<script type="text/javascript" src="/scripts/utilities.js"></script>
+
 	<link rel="stylesheet" type="text/css" href="/bootstrap.css">
 	<head>
 		<title>Login Page</title>
@@ -11,6 +15,7 @@
 	<body class='d-flex flex-column min-vh-100'>
 		<div class='mt-auto d-flex flex-column justify-content-center align-items-center'>
 			<h1>Login</h1>
+			<div class="alert d-none" role="alert" id="alert"></div>
 			<form method="post" id='login-form'>
 				<div class='form-group mb-1'>
 					<label for="email">E-mail address:</label>
@@ -22,12 +27,12 @@
 					<input type="password" class='form-control' placeholder='Enter password' id="password" name="password" aria-describedby="password-error">
 				</div>
 
-				<div class='form-group'>
-					<button type="submit" class="btn btn-primary" formaction="/account/login">Login</button>
-				</div>
+				<button type="button" class="btn btn-primary" id="login_button">
+					Login
+				</button>
 			</form>
 
-			<a href="/account/createaccount">create account</a>
+			<a href="/account/create">create account</a>
 		</div>
 
 		<< partials/footer >>

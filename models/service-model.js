@@ -31,24 +31,18 @@ var ServiceSchema = new mongoose.Schema({
 // 	appointment.date = Date.parse(appointment.date);
 // });
 
-ServiceSchema.pre('deleteOne', function(next) {
+ServiceSchema.pre('findOneAndRemove', function(next) {
 	const id = this.getQuery()['_id'];
 	const name = this.getQuery()['name'];
 	console.log(`Deleting service: ${name}, ID: ${id}`);
 
-
-
 	next();
 });
 
-ServiceSchema.post('deleteOne', function(doc, next) {
+ServiceSchema.post('findOneAndRemove', function(doc, next) {
 	const id = this.getQuery()['_id'];
 	const name = this.getQuery()['name'];
 	console.log(`Deleted service: ${name}, ID: ${id}`);
-
-	// TODO: deletes
-	// delete all appointments
-	// AppointmentSchema.deleteMany({service: id});
 
 	console.log(`Deleting appointments tied to this service`);
 

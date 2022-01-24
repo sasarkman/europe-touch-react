@@ -4,6 +4,7 @@ var express = require('express');
 var router = express.Router();
 
 var mongoose = require('mongoose');
+var ObjectId = require('mongoose').Types.ObjectId;
 
 // Load user input validator
 const { check, validationResult } = require('express-validator');
@@ -27,12 +28,12 @@ router.route('/schedule').
 		[
 			auth.isLoggedIn,
 			check('datetime').notEmpty().isISO8601(),
-			check('service', 'Invalid service ID').notEmpty()
+			check('service').notEmpty()
 		],
 		function(req, res) {
 			const errors = validationResult(req);
 			if(!errors.isEmpty()) {
-				return res.status(422).json({ errors: errors.array() });
+				return res.status(422).json({ msg: 'Invalid input' });
 			}
 
 			// Get session info
@@ -51,10 +52,12 @@ router.route('/schedule').
 						newAppointment.save(function(err, result) {
 							if(err) {
 								console.log(err);
-								return res.send("ERROR");
+								// return res.send("ERROR");
+								return res.status(400).json({ msg: 'Failed to schedule appointment' })
 							} else {
 								console.log(`appointment made for email ${email}, id: ${id}`);
-								return res.redirect('/account');
+								// return res.redirect('/account');
+								return res.status(200).json({ msg: 'Appointment scheduled!' })
 							}
 						});
 					}
@@ -87,7 +90,6 @@ router.route('/getall/').
 			function(req, res) {
 				// console.log(req.session.user);
 				const id = new mongoose.Types.ObjectId(req.session.user._id);
-				// const id = req.session.user._id;
 
 				// Final query output structure
 				var project = {
@@ -119,11 +121,17 @@ router.route('/getall/').
 					var query = {};
 
 					// The 'title' field is used by fullcalendar and we want a different 
-					// event title to display based on what kind of user this is, in this case title = person name
-					project.title = '$account.name';
+					// event title to display based on what kind of user this is, in this case title = '<name>: <service name>'
+					project.title = {
+						"$concat": ["$account.name", ": ", "$service.name"]
+					}
 				} else {
-					// Just return appointmetns for this user
+					// Just return appointments for this user
 					var query = {account: id};
+
+					project.title = {
+						"$concat": ["$service.name", ": ", "$service.description"]
+					}
 				}
 
 				// Define the type of appointment to retrieve
@@ -140,7 +148,17 @@ router.route('/getall/').
 						break;
 				}
 
-				console.log(`Type: ${type}`);
+
+				var today = new Date(),
+				oneDay = ( 1000 * 60 * 60 * 24 ),
+				thirtyDays = new Date( today.valueOf() - ( 30 * oneDay ) ),
+				fifteenDays = new Date( today.valueOf() - ( 15 * oneDay ) ),
+				sevenDays = new Date( today.valueOf() + ( 7 * oneDay ) );
+
+				// Need more work here
+				// query.datetime = {
+				// 	"$gte": today,
+				// }
 
 				AppointmentModel.aggregate([
 					{
@@ -177,10 +195,8 @@ router.route('/getall/').
 						$project: project
 					}],
 					function(err, result) {
-						if(err) res.send(err);
-						else if(result) {
-							res.status(200).json(result);
-						}
+						if(err) res.status(400).json(err)
+						else return res.status(200).json(result);
 					}
 				);
 			}
@@ -224,11 +240,13 @@ router.route('/getall/').
 // 		}
 // 	);
 
-router.route('/approve')
+router.route('/confirm')
 	.post(
 		[
 			auth.isAdmin,
-			check('i', 'Invalid input').notEmpty()
+			check('id').custom(value => {
+				return ObjectId.isValid(value);
+			}),
 		],
 		function(req, res) {
 			const errors = validationResult(req);
@@ -236,11 +254,9 @@ router.route('/approve')
 				return res.status(422).json({ errors: errors.array() });
 			}
 
-			var id = new mongoose.Types.ObjectId(req.body.i);
+			var id = new mongoose.Types.ObjectId(req.body.id);
 			var query = { _id: id };
 			
-			console.log(query);
-
 			AppointmentModel.findByIdAndUpdate(id,
 				{
 					$set: {
@@ -248,19 +264,21 @@ router.route('/approve')
 					}
 				},
 				function(err, result) {
-					if(err) return res.send(err);
-					else return res.send(result);
+					if(err) return res.status(400).json({ msg: 'Failed to confirm appointment' })
+					else return res.status(200).json({ msg: 'Confirmed appointment!', data: result })
 				}
 			);
 			
 		}
 	);
 
-router.route('/unapprove')
+router.route('/unconfirm')
 	.post(
 		[
 			auth.isAdmin,
-			check('i', 'Invalid input').notEmpty()
+			check('id').custom(value => {
+				return ObjectId.isValid(value);
+			}),
 		],
 		function(req, res) {
 			const errors = validationResult(req);
@@ -268,7 +286,7 @@ router.route('/unapprove')
 				return res.status(422).json({ errors: errors.array() });
 			}
 
-			var id = new mongoose.Types.ObjectId(req.body.i);
+			var id = new mongoose.Types.ObjectId(req.body.id);
 			var query = { _id: id };
 
 			console.log(query);
@@ -280,8 +298,8 @@ router.route('/unapprove')
 					}
 				},
 				function(err, result) {
-					if(err) return res.send(err);
-					else return res.send(result);
+					if(err) return res.status(400).json({ msg: 'Failed to unconfirm appointment' })
+					else return res.status(200).json({ msg: 'Unconfirmed appointment!', data: result })
 				}
 			);
 			
@@ -291,7 +309,9 @@ router.route('/unapprove')
 router.route('/cancel')
 	.post([
 		auth.isLoggedIn,
-		check('i', 'Invalid input').notEmpty()
+		check('id').custom(value => {
+			return ObjectId.isValid(value);
+		}),
 	], function(req, res) {
 		const errors = validationResult(req);
 		if(!errors.isEmpty()) {
@@ -299,7 +319,7 @@ router.route('/cancel')
 		}
 
 		var admin = req.session.user.admin;
-		var appointmentID = new mongoose.Types.ObjectId(req.body.i);
+		var appointmentID = new mongoose.Types.ObjectId(req.body.id);
 
 		var query = {
 			_id: appointmentID
@@ -315,7 +335,7 @@ router.route('/cancel')
 
 		// Was this appointment approved?
 		AppointmentModel.findOne(query, function(err, result) {
-			if(err) console.log("Failure getting appointment");
+			if(err) return res.status(400).json({ msg: 'Failed to check appointment.' })
 			else {
 				console.log(`Appointment status: ${result.approved}`);
 				if(result.approved) {
@@ -325,8 +345,8 @@ router.route('/cancel')
 		});
 
 		AppointmentModel.deleteOne(query, function(err, result) {
-			if(err) return res.send(err);
-			else return res.send(result);
+			if(err) return res.status(400).json({ msg: 'Failed to cancel appointment.'})
+			else return res.status(200).json({ msg: 'Cancelled appointment!', data: result })
 		});
 	})
 

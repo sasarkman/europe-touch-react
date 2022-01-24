@@ -6,6 +6,7 @@ var router = express.Router();
 const path = require('path');
 
 var mongoose = require('mongoose');
+var ObjectId = require('mongoose').Types.ObjectId;
 
 // Load user input validator
 const { check, validationResult } = require('express-validator');
@@ -24,9 +25,10 @@ router.route('/').
 		],
 		function(req, res) {
 			var user = req.session.user.email;
+			var isAdmin = req.session.user.admin;
 			var HTML = "";
 
-			if(req.session.user.admin) {
+			if(isAdmin) {
 				HTML = `
 					<a href="/appointment/viewall">View appointments</a>
 					<a href="/service/">Manage services</a>
@@ -34,7 +36,7 @@ router.route('/').
 				`;
 			} else {
 				HTML = `
-					<a href="/appointment/viewall">View appointments</a>
+					<a href="/appointment/viewall">My appointments</a>
 					<a href="/appointment/schedule">Schedule appointment</a>
 				`;
 			}
@@ -60,7 +62,7 @@ router.route('/login').
 		function(req, res) {
 			const errors = validationResult(req);
 			if(!errors.isEmpty()) {
-				return res.status(422).json({ errors: errors.array() });
+				return res.status(422).json({ msg: 'Invalid input' });
 			}
 
 			var email = req.body.email;
@@ -76,13 +78,13 @@ router.route('/login').
 							//cookie
 							req.session.user = record;
 
-							return res.redirect('/account');
+							return res.status(200).json({ msg: 'Logged in!'});
 						} else {
-							return res.send("Incorrect password");
+							return res.status(400).json({ msg: 'Account does not exist or password is incorrect'});
 						}
 					});
 				} else {
-					return res.send(`Account not found: ${email} and ${password}`);
+					return res.status(400).json({ msg: 'Account does not exist or password is incorrect'});
 				}
 			});
 		}
@@ -94,7 +96,7 @@ router.route('/logout').all(auth.isLoggedIn, function(req, res) {
 	return res.redirect('login');
 });
 
-router.route('/createaccount').
+router.route('/create').
 	get(
 		[
 			auth.isNotLoggedIn
@@ -106,30 +108,35 @@ router.route('/createaccount').
 	post(
 		[
 			auth.isNotLoggedIn,
-			check('email', 'Invalid e-mail address').isEmail(),
-			check('password', 'Password was empty').notEmpty()
+			check('email').isEmail(),
+			check(['password', 'name', 'phone', 'age']).notEmpty(),
 		], function(req, res) {
 			const errors = validationResult(req);
 			if(!errors.isEmpty()) {
-				return res.status(422).json({ errors: errors.array() });
+				return res.status(422).json({ msg: 'Invalid input' });
 			}
 
-			var email = req.body.email;
-			var password = req.body.password;
+			var query = {
+				'email': req.body.email,
+				'password': req.body.password,
+				'name': req.body.name,
+				'phone': req.body.phone,
+				'age': req.body.age,
+			}
 
-			// Query database for how many accounts with this email exist
-			AccountModel.count({email: email}, function(err, count) {
-				if(err) res.send(err);
-				else if(count > 0) {
-					console.log("Duplicate email: " + email);
-					res.status(401).send("E-mail already in use: " + email);
+			var newAccount = new AccountModel(query);
+			newAccount.save(function(err, result) {
+				if(err) {
+					if(err.code === 11000) {
+						res.status(400).json({ msg: 'Account already exists!'});
+					} else {
+						res.status(400).json({ msg: 'Bad request'});
+					}
 				} else {
-					var newAccount = new AccountModel({email, password});
-					newAccount.save();
-					console.log(`account created: ${email}`);
-					res.redirect('/account/login');
+					console.log(`account created: ${result.email}`);
+					res.status(200).json({ msg: 'Account created!'});
 				}
-			})
+			});
 		}
 	)
 // TODO: complete
@@ -157,7 +164,5 @@ router.route('/deleteaccount').
 		}
 	)
 ;
-
-
 
 module.exports = router;

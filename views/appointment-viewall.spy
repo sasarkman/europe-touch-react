@@ -3,7 +3,9 @@
 	<script type="text/javascript" src="/jquery-ui.js"></script>
 	<script type="text/javascript" src="/bootstrap.js"></script>
 	<script type="text/javascript" src="/fullcalendar.js"></script>
-	<script type="text/javascript" src="/classes/appointment.js"></script>
+
+	<script type="text/javascript" src="/scripts/api.js"></script>
+	<script type="text/javascript" src="/scripts/utilities.js"></script>
 
 	<link rel="stylesheet" type="text/css" href="/bootstrap.css">
 	<link rel="stylesheet" type="text/css" href="/fullcalendar.css">

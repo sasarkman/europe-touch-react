@@ -1,30 +1,66 @@
-console.log('hello');
+$(function() {
+	const durationField = $('#duration');
+	const priceField = $('#price');
+	const descriptionField = $('#description');
+	const servicesSelector = $('#services');
 
-$(document).ready(function() {
-	const durationField = document.querySelector('#duration');
-	const priceField = document.querySelector('#price');
-	const descriptionField = document.querySelector('#description');
-	const servicesSelector = document.querySelector('#services');
+	const settings = {
+		method: 'GET',
+		headers: {
+			'Accept': 'application/json',
+			'Content-Type': 'application/json',
+		},
+	}
 
-	document.querySelector('#services').addEventListener('change', (e) => {
-		const serviceID = e.target.value;
-		new Service().getService(serviceID).then((data) => {
-			const service = data[0];
+	$('#services').on('change', (e) => {
+		alertReset();
+		$('.collapse').collapse('hide');
 
-			durationField.innerHTML = service.duration;
-			priceField.innerHTML = service.price;
-			descriptionField.innerHTML = service.description;
+		var statusCode = '';
+		var statusText = '';
+		var serviceID = e.target.value;
+		new API().request(`/service/getservice/${serviceID}`, settings).then(response => {
+			statusCode = response.status;
+			statusText = response.msg;
+
+			switch(statusCode) {
+				case 200:
+					// not ideal, but need delay here
+					setTimeout(function() {
+						$('.collapse').collapse('show');
+					}, 500);
+
+					const service = response.data[0];
+					durationField.html(service.duration);
+					priceField.val(service.price);
+					descriptionField.html(service.description);
+					break;
+				default:
+					alertShow(statusText, 'alert-danger');
+					break
+			}
 		});
 	})
 
-	new Service().getAllServices().then((data) => {
-		data.forEach(service => {
-			const option = document.createElement('option');
-			option.value = service._id;
-			option.innerHTML = service.name;
-			servicesSelector.appendChild(option);
-		});
-		servicesSelector.dispatchEvent(new Event('change'));
-	});
+	var statusCode = '';
+	var statusText = '';
+	new API().request('/service/getservices', settings).then(response => {
+		statusCode = response.status;
+		statusText = response.msg;
 
+		switch(statusCode) {
+			case 200:
+				response.data.forEach(service => {
+					const option = document.createElement('option');
+					option.value = service._id;
+					option.innerHTML = service.name;
+					servicesSelector.append(option);
+				});
+				servicesSelector.trigger('change');
+				break;
+			default:
+				alertShow(statusText, 'alert-danger');
+				break
+		}
+	});
 });

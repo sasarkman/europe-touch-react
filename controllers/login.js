@@ -1,7 +1,5 @@
-$(document).ready(function () {
-	console.log('hello');
-
-	$('#login-form').validate({
+$(function () {
+	var validator = $('#login-form').validate({
 		rules: {
 			email: {
 				email: true,
@@ -15,16 +13,58 @@ $(document).ready(function () {
 			email: 'Please enter an e-mail address',
 			password: 'Please enter a password'
 		},
-		errorElement: 'em',
+		errorElement: 'div',
 		errorPlacement: function ( error, element ) {
 			// Add the `help-block` class to the error element
-			error.addClass( "help-block" );
+			error.addClass( "invalid-feedback" );
 
-			if ( element.prop( "type" ) === "checkbox" ) {
-				error.insertAfter( element.parent( "label" ) );
-			} else {
-				error.insertAfter( element );
-			}
-		},
+			error.insertAfter( element );
+		}
 	})
+
+	$('#login_button').on('click', function() {
+		console.log('clicked');
+
+		// reset alert if need be
+		alertReset();
+
+		// exit if input isn't valid
+		if(!validator.form()) return;
+
+		// show spinner
+		showSpinner('#login_button', 'Logging in...');
+
+		var email = $('#email').val();
+		var password = $('#password').val();
+
+		const settings = {
+			method: 'POST',
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+				'email': email,
+				'password': password,
+			})
+		}
+
+		var statusCode = '';
+		var statusText = '';
+		new API().request('/account/login', settings).then(response => {
+			console.log(response);
+			statusCode = response.status;
+			statusText = response.msg;
+
+			switch(statusCode) {
+				case 200:
+					window.location.replace('/account');
+					break;
+				default:
+					alertShow(statusText, 'alert-danger');
+					hideSpinner('#login_button', 'Login');
+					break
+			}
+		})
+	});
 });

@@ -3,7 +3,12 @@
 	<script type="text/javascript" src="/jquery.js"></script>
 	<script type="text/javascript" src="/jquery-validation.js"></script>
 	<script type="text/javascript" src="/bootstrap.js"></script>
+
 	<script type="text/javascript" src="/controllers/service-create.js"></script>
+
+	<script type="text/javascript" src="/scripts/api.js"></script>
+	<script type="text/javascript" src="/scripts/utilities.js"></script>
+
 	<link rel="stylesheet" type="text/css" href="/bootstrap.css">
 	<head>
 		<title>Create service</title>
@@ -12,6 +17,7 @@
 		<< partials/header >>
 		<div class='mt-auto d-flex flex-column justify-content-center align-items-center'>
 			<h1>Create service</h1>
+			<div class="alert d-none" role="alert" id="alert"></div>
 			<form method="post" id='main-form'>
 				<div class='form-group mb-1'>
 					<label for="name">Service name:</label>
@@ -38,7 +44,9 @@
 					<input class='form-control' id="description" name="description">
 				</div>
 
-				<input type="submit" class="btn btn-primary" formaction="/service/create" value="Create service">
+				<button type="button" class="btn btn-primary" id="create_button">
+					Create service
+				</button>
 			</form>
 		</div>
 		<< partials/footer >>
