@@ -1,4 +1,4 @@
-<script type="text/javascript" src="/controllers/admin/appointment-viewall.js"></script>
+<script type="text/javascript" src="/controllers/admin/appointment-viewAll.js"></script>
 
 <!-- Modal -->
 <div class="modal fade" id="eventModal" tabindex="-1" role="dialog" aria-hidden="true">

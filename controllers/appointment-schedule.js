@@ -63,4 +63,46 @@ $(function() {
 				break
 		}
 	});
+
+	$('#schedule_button').on('click', function() {
+		// reset alert if need be
+		alertReset();
+
+		// show spinner
+		showSpinner('#create_button', 'Creating...');
+
+		var service = $('#service').val();
+		var datetime = $('#datetime').val();
+
+		const settings = {
+			method: 'POST',
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+				'service': service,
+				'datetime': datetime,
+			})
+		}
+
+		var statusCode = '';
+		var statusText = '';
+		new API().request('/appointment/schedule', settings)
+			.then(response => {
+				statusCode = response.status;
+				statusText = response.msg;
+
+				switch(statusCode) {
+					case 200:
+						$('#main-form').hide();
+						alertShow(statusText, 'alert-success');
+						break;
+					default:
+						alertShow(statusText, 'alert-danger');
+						hideSpinner('#schedule_button', 'Schedule');
+						break
+				}
+			})
+	})
 });

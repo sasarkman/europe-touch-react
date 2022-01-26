@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+	<script type="text/javascript" src="/jquery.js"></script>
+	<script type="text/javascript" src="/jquery-validation.js"></script>
+	<script type="text/javascript" src="/bootstrap.js"></script>
+
+	<script type="text/javascript" src="/scripts/utilities.js"></script>
+
+	<link rel="stylesheet" type="text/css" href="/bootstrap.css">
+	<head>
+		<title>Confirmation Page</title>
+	</head>
+	<body class='d-flex flex-column min-vh-100'>
+		<div class='mt-auto d-flex flex-column justify-content-center align-items-center'>
+			<h1>Confirm account</h1>
+			{{ html }}
+		</div>
+
+		<< partials/footer >>
+	</body>
+</html>

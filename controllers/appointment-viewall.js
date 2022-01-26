@@ -53,9 +53,8 @@ $(function () {
 			`, html: true});
 
 			// Confirmation info
+			eventModal.find('#status').html(status);
 			$('#confirmation-info').popover({content: 'Appointments will be confirmed/unconfirmed by Edina and the customer will receive a notification.', html: true});
-
-			
 
 			// Display the modal
 			eventModal.modal('show');
@@ -64,7 +63,7 @@ $(function () {
 			{
 				url: '/appointment/getall/',
 				extraParams: {
-					't': 'a'
+					't': 'c'
 				},
 				color: 'green'
 			},

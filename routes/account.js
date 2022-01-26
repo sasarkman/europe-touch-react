@@ -3,20 +3,24 @@ console.log("account.js");
 var express = require('express');
 var router = express.Router();
 
+const fetch = require('node-fetch');
+
 const path = require('path');
 
 var mongoose = require('mongoose');
 var ObjectId = require('mongoose').Types.ObjectId;
 
 // Load user input validator
-const { check, validationResult } = require('express-validator');
+const { check, param, validationResult } = require('express-validator');
 
 // Load authentication middleware
 const auth = require('../auth');
+const tokenGen = require('crypto');
 
 // Load Models
 var AccountModel = require('../models/account-model');
 var AppointmentModel = require('../models/appointment-model');
+var TokenModel = require('../models/token-model');
 
 router.route('/').
 	get(
@@ -30,13 +34,13 @@ router.route('/').
 
 			if(isAdmin) {
 				HTML = `
-					<a href="/appointment/viewall">View appointments</a>
+					<a href="/appointment/viewAll">View appointments</a>
 					<a href="/service/">Manage services</a>
 					<a href="/service/create">Create service</a>
 				`;
 			} else {
 				HTML = `
-					<a href="/appointment/viewall">My appointments</a>
+					<a href="/appointment/viewAll">My appointments</a>
 					<a href="/appointment/schedule">Schedule appointment</a>
 				`;
 			}
@@ -75,6 +79,11 @@ router.route('/login').
 					record.comparePassword(password, function(err, isMatch) {
 						if(err) res.send(err);
 						if(isMatch) {
+							// Is account confirmed?
+							if(!record.confirmed) {
+								return res.status(400).json({ msg: 'Please confirm your account by following the e-mail sent to your inbox'});
+							}
+
 							//cookie
 							req.session.user = record;
 
@@ -130,11 +139,11 @@ router.route('/create').
 					if(err.code === 11000) {
 						res.status(400).json({ msg: 'Account already exists!'});
 					} else {
-						res.status(400).json({ msg: 'Bad request'});
+						console.log(err);
+						res.status(400).json({ msg: 'Bad request.'});
 					}
 				} else {
-					console.log(`account created: ${result.email}`);
-					res.status(200).json({ msg: 'Account created!'});
+					res.status(200).json({ msg: `Account created! Please confirm your account by following the link sent to: ${req.body.email}.`});
 				}
 			});
 		}
@@ -161,6 +170,250 @@ router.route('/deleteaccount').
 			// 		res.send("all good!");
 			// 	}
 			// })
+		}
+	)
+;
+
+router.route('/confirm/:token?').
+	get(
+		[
+			auth.isNotLoggedIn,
+			param('token').custom(value => {
+				return ObjectId.isValid(value);
+			})
+		],
+		function(req, res) {
+			const errors = validationResult(req);
+			if(!errors.isEmpty()) {
+				return res.status(422).json({ msg: errors.array() });
+			}
+
+			const url = req.headers.host;
+			const token = req.params.token;
+			var html = '<div class="alert alert-class" role="alert" id="alert">html</div>';
+
+			console.log(url);
+
+			var responseCode = '';
+			fetch(`http://${url}/account/confirm/${token}`, { method: 'POST'}).then(response => {
+				responseCode = response.status;
+				return response;
+			}).then(response => response.json()
+			).then(response => {
+				switch(responseCode) {
+					case 200:
+						html = html.replace('alert-class', 'alert-success');
+						html = html.replace('html', `${response.msg} Please <a href="/account/login" class="alert-link">login</a>.`);
+					case 400:
+						html = html.replace('alert-class', 'alert-danger');
+						html = html.replace('html', response.msg);
+					default:
+				}
+
+				return res.render('account-confirm', { html });
+			}) // catch should be unreachable anyways
+		}
+	).
+	post(
+		[
+			auth.isNotLoggedIn,
+			param('token').custom(value => {
+				return ObjectId.isValid(value);
+			})
+		],
+		function(req, res) {
+			const errors = validationResult(req);
+			if(!errors.isEmpty()) {
+				return res.status(422).json({ msg: errors.array() });
+			}
+
+			var id = mongoose.Types.ObjectId(req.params.token);
+
+			AccountModel.findOne({_id: id}, function(err, result) {
+				if(err) return res.status(400).json({ msg: 'Error confirming account.'})
+				else if(result) {
+					console.log('1');
+
+					// Is account confirmed?
+					if(result.confirmed) {
+						console.log('2');
+						return res.status(400).json({ msg: 'Error confirming account.'});
+					} else {
+						result.confirmed = true;
+						
+						// Set it to confirmed
+						result.save(function(err, result) {
+							if(err) {
+								console.log('3');
+								console.log(err);
+								return res.status(400).json({ msg: 'Error confirming account.'});
+							}
+							else {
+								console.log('4');
+								return res.status(200).json({ msg: 'Successfully confirmed account.'});
+							}
+						});
+					}
+				} else {
+					return res.status(400).json({ msg: 'Error confirming account.'});
+				}
+			})
+		}
+	)
+;
+
+router.route('/forgotPassword').
+	get(
+		[
+			auth.isNotLoggedIn,
+		],
+		function(req, res) {
+			return res.render('account-forgotPassword', {});
+		}
+	).
+	post(
+		[
+			auth.isNotLoggedIn,
+			check('email').isEmail()
+		],
+		function(req, res) {
+			const errors = validationResult(req);
+			if(!errors.isEmpty()) {
+				return res.status(422).json({ msg: 'Invalid input' });
+			}
+
+			const email = req.body.email;
+			const token = tokenGen.randomBytes(16).toString('hex');
+
+			const query = {
+				'token': token,
+				'email': email
+			}
+
+			new TokenModel(query).save(function(err, result) {
+				if(err) {
+					console.log(err);
+					res.status(400).json({ msg: 'Server error.' });
+				}
+				else {
+					const deleteQuery = {
+						'email': email, 
+						'token': { $nin: token }
+					}
+
+					// Delete all previous tokens
+					TokenModel.deleteMany(deleteQuery, function(err, result) {
+						if(err) return res.status(400).json({ msg: 'Server error.' });
+						else {
+							console.log(`Deleted ${result.deletedCount} tokens`);
+							return res.status(200).json({ msg: `Password reset link has been sent to: ${email}.`});
+						}
+					})
+				}
+			})
+		}
+	)
+;
+
+router.route('/resetPassword/:token').
+	get(
+		[
+			auth.isNotLoggedIn,
+			param('token').notEmpty().isHexadecimal()
+		],
+		function(req, res) {
+			const errorHTML = '<div class="alert alert-danger" role="alert">Invalid or expired password reset link.</div>'
+			const successHTML = `
+				<script type="text/javascript" src="/controllers/account-resetPassword.js"></script>
+				<div class="alert d-none" role="alert" id="alert"></div>
+				<form id='main-form'>
+					<div class='form-group mb-1'>
+						<label for="password">New password:</label>
+						<input type="password" class='form-control' id="password" name="password">
+					</div>
+
+					<div class='form-group mb-1'>
+						<label for="password2">Confirm password:</label>
+						<input type="password" class='form-control' id="password2" name="password2">
+					</div>
+
+					<button type="button" class="btn btn-primary" id="confirm_button">Confirm</button>
+				</form>
+			`;
+
+			const errors = validationResult(req);
+			if(!errors.isEmpty()) {
+				return res.render('account-resetPassword', { html: errorHTML });
+			}
+
+			const token = req.params.token;
+			const query = {
+				'token': token
+			};
+
+			console.log(query);
+
+			TokenModel.findOne(query, function(err, result) {
+				if(err) return res.render('account-resetPassword', { html: errorHTML });
+				else if(result) {
+					console.log(result);
+					return res.render('account-resetPassword', { html: successHTML });
+				} else {
+					console.log('not found');
+					return res.render('account-resetPassword', { html: errorHTML });
+				}
+			})
+		}
+	).
+	post(
+		[
+			auth.isNotLoggedIn,
+			param('token').notEmpty().isHexadecimal(),
+			check('password').notEmpty()
+		],
+		function(req, res) {
+			const errors = validationResult(req);
+			if(!errors.isEmpty()) {
+				return res.status(422).json({ msg: 'Invalid input' });
+			}
+
+			const password = req.body.password;
+			const token = req.params.token;
+
+			console.log(token);
+
+			TokenModel.findOne({'token':token}, function(err, result) {
+				if(err) {
+					console.log(err);
+					return res.status(400).json({ msg: 'Errorrr.' });
+				}
+				else if(result) {
+					console.log(result);
+					const email = result.email;
+
+					var account = AccountModel.findOne({email}, function(err, result) {
+						result.password = password;
+						result.save(function(err, result) {
+							if(err) {
+								console.log(err);
+								res.status(400).json({ msg: 'Bad request.'});
+							} else {
+								// Delete this token
+								TokenModel.deleteOne({token}, function(err, result) {
+									if(err) return res.status(400).json({ msg: 'Server error.' });
+									else {
+										console.log(`Deleted ${result.deletedCount} tokens`);
+										return res.status(200).json({ msg: `Password reset!`});
+									}
+								})
+
+							}
+						});
+					})
+				} else {
+					return res.status(400).json({ msg: 'Error.' });
+				}
+			})
 		}
 	)
 ;

@@ -42,13 +42,14 @@ jQuery(function () {
 	});
 
 	$('#create_button').on('click', function() {
-		console.log('clicked');
-
 		// reset alert if need be
 		alertReset();
 
 		// exit if input isn't valid
 		if(!validator.form()) return;
+
+		// show spinner
+		showSpinner('#create_button', 'Creating...');
 
 		var email = $('#email').val();
 		var password = $('#password').val();
@@ -73,33 +74,21 @@ jQuery(function () {
 
 		var statusCode = '';
 		var statusText = '';
-		var alertCSS = '';
-		var alertText = '';
-		new Account().createAccount(settings)
+		new API().request('/account/create', settings)
 			.then(response => {
 				statusCode = response.status;
-				return response;
-			})
-			.then(response => response.json())
-			.then( response => {
 				statusText = response.msg;
-				alertText = statusText;
-
-				console.log(`status code: ${statusCode}`);
 
 				switch(statusCode) {
 					case 200:
-						alertText = `${alertText}&nbsp;<a href="/account/login" class="alert-link">login</a>`;
 						$('#main-form').hide();
-						alertShow(alertText, 'alert-success');
+						alertShow(statusText, 'alert-success');
 						break;
 					default:
-						alertShow(alertText, 'alert-danger');
+						alertShow(statusText, 'alert-danger');
+						hideSpinner('#create_button', 'Create service');
 						break
 				}
-			})
-			.catch((err) => {
-				console.log(err);
-			});
+		})
 	});
 });

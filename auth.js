@@ -1,5 +1,4 @@
 module.exports.isLoggedIn = function(req, res, next) {
-	console.log("isLoggedIn middleware");
 	if(req.session) {
 		if(req.session.user) {
 			return next();
@@ -9,7 +8,6 @@ module.exports.isLoggedIn = function(req, res, next) {
 }
 
 module.exports.isNotLoggedIn = function(req, res, next) {
-	console.log("isNotLoggedIn middleware");
 	if(req.session) {
 		if(req.session.user) {
 			return res.redirect('/account/');
@@ -19,7 +17,6 @@ module.exports.isNotLoggedIn = function(req, res, next) {
 }
 
 module.exports.isAdmin = function(req, res, next) {
-	console.log("isAdmin middleware");
 	if(req.session) {
 		if(req.session.user) {
 			if(req.session.user.admin) {

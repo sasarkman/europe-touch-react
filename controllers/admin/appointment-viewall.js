@@ -71,8 +71,6 @@ $(function () {
 				hideButton('#unconfirm-appointment')
 			}
 
-			
-
 			// Display the modal
 			eventModal.modal('show');
 		},

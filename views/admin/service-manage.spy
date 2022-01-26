@@ -61,6 +61,7 @@
 							Deleting this service will also delete all appointments (even confirmed ones) associated to it. Are you sure?
 						</div>
 						<div class="modal-footer">
+							<!-- TODO: rework deletion -->
 							<button type="button" class="btn btn-danger" id="confirm_delete">Yes</button>
 							<button type="button" class="btn btn-ok" data-bs-dismiss="modal">Cancel</button>
 						</div>

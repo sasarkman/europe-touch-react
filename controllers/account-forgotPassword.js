@@ -1,17 +1,13 @@
-$(function () {
+$(function() {
 	var validator = $('#main-form').validate({
 		rules: {
 			email: {
 				email: true,
 				required: true
 			},
-			password: {
-				required: true
-			}
 		},
 		messages: {
 			email: 'Please enter an e-mail address',
-			password: 'Please enter a password'
 		},
 		errorElement: 'div',
 		errorPlacement: function ( error, element ) {
@@ -22,9 +18,7 @@ $(function () {
 		}
 	})
 
-	$('#login_button').on('click', function() {
-		console.log('clicked');
-
+	$('#confirm_button').on('click', function() {
 		// reset alert if need be
 		alertReset();
 
@@ -32,10 +26,9 @@ $(function () {
 		if(!validator.form()) return;
 
 		// show spinner
-		showSpinner('#login_button', 'Logging in...');
+		showSpinner('#confirm_button', 'Confirm');
 
 		var email = $('#email').val();
-		var password = $('#password').val();
 
 		const settings = {
 			method: 'POST',
@@ -45,23 +38,23 @@ $(function () {
 			},
 			body: JSON.stringify({
 				'email': email,
-				'password': password,
 			})
 		}
 
 		var statusCode = '';
 		var statusText = '';
-		new API().request('/account/login', settings).then(response => {
+		new API().request('/account/forgotPassword', settings).then(response => {
 			statusCode = response.status;
 			statusText = response.msg;
 
 			switch(statusCode) {
 				case 200:
-					window.location.replace('/account');
+					$('#main-form').hide();
+					alertShow(statusText, 'alert-success');
 					break;
 				default:
 					alertShow(statusText, 'alert-danger');
-					hideSpinner('#login_button', 'Login');
+					hideSpinner('#confirm_button', 'Confirm');
 					break
 			}
 		})

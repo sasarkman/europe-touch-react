@@ -17,7 +17,7 @@
 		<div class='mt-auto d-flex flex-column justify-content-center align-items-center'>
 			<h1>Schedule appintment</h1>
 			<div class="alert d-none" role="alert" id="alert"></div>
-			<form method="post">
+			<form method="post" id="main-form">
 				<div class='form-group mb-1'>
 					<label for="service">Type of service:</label>
 					<select class='form-control' name="service" id="services">
@@ -50,7 +50,7 @@
 						<input type="datetime-local" class='form-control' id="datetime" name="datetime">
 					</div>
 
-					<input type="submit" class="btn btn-primary" formaction="/appointment/schedule" value="Schedule">
+					<button type="button" class="btn btn-primary" id="schedule_button">Schedule</button>
 				</div>
 			</form>
 		</div>

@@ -44,41 +44,34 @@ router.route('/schedule').
 			var service = new mongoose.Types.ObjectId(req.body.service);
 			var datetime = req.body.datetime;
 
-			AccountModel.count({email},
-				function(err, count) {
-					console.log(`count: ${count}`);
-					if(count == 1) {
-						var newAppointment = new AppointmentModel({account:id, service, datetime});
-						newAppointment.save(function(err, result) {
-							if(err) {
-								console.log(err);
-								// return res.send("ERROR");
-								return res.status(400).json({ msg: 'Failed to schedule appointment' })
-							} else {
-								console.log(`appointment made for email ${email}, id: ${id}`);
-								// return res.redirect('/account');
-								return res.status(200).json({ msg: 'Appointment scheduled!' })
-							}
-						});
-					}
+			var newAppointment = new AppointmentModel({account:id, service, datetime});
+			newAppointment.save(function(err, result) {
+				if(err) {
+					console.log(err);
+					// return res.send("ERROR");
+					return res.status(400).json({ msg: 'Failed to schedule appointment' })
+				} else {
+					console.log(`appointment made for email ${email}, id: ${id}`);
+					// return res.redirect('/account');
+					return res.status(200).json({ msg: 'Appointment scheduled!' })
 				}
-			)
+			});
 		}
 	)
 ;
 
-router.route('/viewall').
+router.route('/viewAll').
 		get(
 			[
 				auth.isLoggedIn
 			],
 			function(req, res) {
 				var admin = req.session.user.admin;
-				var HTML = `<< partials/appointment-viewall >>`;
+				var HTML = `<< partials/appointment-viewAll >>`;
 				
-				if(admin) HTML = `<< partials/admin/appointment-viewall >>`;
+				if(admin) HTML = `<< partials/admin/appointment-viewAll >>`;
 
-				res.render('appointment-viewall', { partial: HTML });
+				res.render('appointment-viewAll', { partial: HTML });
 			}
 		)
 
@@ -137,7 +130,7 @@ router.route('/getall/').
 				// Define the type of appointment to retrieve
 				switch(type) {
 					// Query approved appointments
-					case 'a':
+					case 'c':
 						query.approved = true;
 						break;
 					// Query unapproved appointments
@@ -155,7 +148,7 @@ router.route('/getall/').
 				fifteenDays = new Date( today.valueOf() - ( 15 * oneDay ) ),
 				sevenDays = new Date( today.valueOf() + ( 7 * oneDay ) );
 
-				// Need more work here
+				// TODO: Need more work here
 				// query.datetime = {
 				// 	"$gte": today,
 				// }
@@ -315,8 +308,10 @@ router.route('/cancel')
 	], function(req, res) {
 		const errors = validationResult(req);
 		if(!errors.isEmpty()) {
-			return res.status(422).json({ errors: errors.array() });
+			return res.status(422).json({ msg: errors.array() });
 		}
+
+		// note: check that 'id' is this user's id?
 
 		var admin = req.session.user.admin;
 		var appointmentID = new mongoose.Types.ObjectId(req.body.id);

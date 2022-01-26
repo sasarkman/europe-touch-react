@@ -21,7 +21,7 @@ const path = require('path');
 const session = require('express-session');
 app.use(session({
 	name:'session_id',
-	secret:'europe-touch',
+	secret: process.env.SESSION_SECRET,
 	saveUninitialized: true,
 	resave: false,
 	// store:new FileStore()
@@ -84,7 +84,6 @@ app.use('/bootstrap.css', express.static(path.join(__dirname, 'node_modules/boot
 
 app.use('/font-awesome.css', express.static(path.join(__dirname, 'node_modules/font-awesome/css/font-awesome.css')));
 
-
 app.use('/fullcalendar.js', express.static(path.join(__dirname, 'node_modules/fullcalendar/main.js')));
 app.use('/fullcalendar.css', express.static(path.join(__dirname, 'node_modules/fullcalendar/main.css')));
 
@@ -92,8 +91,7 @@ app.use('/fullcalendar.css', express.static(path.join(__dirname, 'node_modules/f
 const mongo_url = process.env.MONGODB_URL;
 
 // Express IP and port info
-const hostname = "127.0.0.1";
-const port = 8000;
+app.set('port', process.env.PORT);
 
 mongoose.connect(mongo_url, { useNewUrlParser:true, useUnifiedTopology:true }, (err) => {
 	if (err) {
@@ -110,10 +108,6 @@ app.get('/', isLoggedIn, function(req, res) {
 
 module.exports = app;
 
-app.listen(3000, function() {
-	console.log('Example app listening on port 3000!');
+app.listen(app.get('port'), function() {
+	console.log(`Example app listening on port ${app.get('port')}`);
 });
-
-
-
-

@@ -29,10 +29,15 @@ var AccountSchema = new mongoose.Schema({
 	admin: {
 		type: Boolean,
 		default: false
+	},
+	confirmed: {
+		type: Boolean,
+		default: false
 	}
 });
 
 AccountSchema.pre('save', function(next) {
+	this.wasNew = this.isNew;
 	var account = this;
 
 	if(!account.isModified('password')) return next();
@@ -47,6 +52,17 @@ AccountSchema.pre('save', function(next) {
 			next();
 		})
 	})
+});
+
+AccountSchema.post('save', function(doc, next) {
+	var account = this;
+
+	if(this.wasNew) {
+		console.log(`http://localhost:3000/account/confirm/${this._id}`);
+		// send confirmation e-mail
+	}
+
+	next();
 })
 
 AccountSchema.methods.comparePassword = function(candidatePassword, callback) {

@@ -1,17 +1,17 @@
-$(function () {
+$(function() {
 	var validator = $('#main-form').validate({
 		rules: {
-			email: {
-				email: true,
-				required: true
-			},
 			password: {
 				required: true
-			}
+			},
+			password2: {
+				required: true,
+				equalTo: '#password'
+			},
 		},
 		messages: {
-			email: 'Please enter an e-mail address',
-			password: 'Please enter a password'
+			password: 'Please enter a password',
+			password2: 'Please enter a matching password',
 		},
 		errorElement: 'div',
 		errorPlacement: function ( error, element ) {
@@ -22,9 +22,7 @@ $(function () {
 		}
 	})
 
-	$('#login_button').on('click', function() {
-		console.log('clicked');
-
+	$('#confirm_button').on('click', function() {
 		// reset alert if need be
 		alertReset();
 
@@ -32,10 +30,14 @@ $(function () {
 		if(!validator.form()) return;
 
 		// show spinner
-		showSpinner('#login_button', 'Logging in...');
+		showSpinner('#confirm_button', 'Confirm');
 
-		var email = $('#email').val();
+		var url = window.location.pathname.split('/');
+		var urlLen = url.length;
+		var token = url[urlLen - 1];
+
 		var password = $('#password').val();
+		var password2 = $('#password2').val();
 
 		const settings = {
 			method: 'POST',
@@ -44,24 +46,26 @@ $(function () {
 				'Content-Type': 'application/json',
 			},
 			body: JSON.stringify({
-				'email': email,
 				'password': password,
+				'password2': password2,
 			})
 		}
 
 		var statusCode = '';
 		var statusText = '';
-		new API().request('/account/login', settings).then(response => {
+		new API().request(`/account/resetPassword/${token}`, settings).then(response => {
 			statusCode = response.status;
 			statusText = response.msg;
 
 			switch(statusCode) {
 				case 200:
-					window.location.replace('/account');
+					statusText = `${statusText} Please <a href='/account/login'>login</a>.`;
+					$('#main-form').hide();
+					alertShow(statusText, 'alert-success');
 					break;
 				default:
 					alertShow(statusText, 'alert-danger');
-					hideSpinner('#login_button', 'Login');
+					hideSpinner('#confirm_button', 'Confirm');
 					break
 			}
 		})

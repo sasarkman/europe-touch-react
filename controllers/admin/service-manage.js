@@ -130,6 +130,7 @@ $(function() {
 
 				switch(statusCode) {
 					case 200:
+						$('#services').trigger('change');
 						alertShow(statusText, 'alert-success');
 						break;
 					default:
