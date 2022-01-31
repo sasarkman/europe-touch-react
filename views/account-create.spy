@@ -3,18 +3,22 @@
 	<script type="text/javascript" src="/jquery.js"></script>
 	<script type="text/javascript" src="/jquery-validation.js"></script>
 	<script type="text/javascript" src="/bootstrap.js"></script>
+	<script type="text/javascript" src="/intl-tel-input.js"></script>
 	<script type="text/javascript" src="/controllers/account-create.js"></script>
 
 	<script type="text/javascript" src="/scripts/api.js"></script>
 	<script type="text/javascript" src="/scripts/utilities.js"></script>
 
 	<link rel="stylesheet" type="text/css" href="/bootstrap.css">
+	<link rel="stylesheet" type="text/css" href="/intl-tel-input.css">
 
-	<script>
-		$(function () {
-			$('[data-bs-toggle="popover"]').popover()
-		})
-	</script>
+	<style>
+		/* Fix for popover appearing ontop of iti dropdown */
+		.iti__country-list {
+			z-index: 3
+		}
+	</style>
+
 	<head>
 		<title>Create Account</title>
 	</head>
@@ -39,9 +43,9 @@
 				</div>
 	
 				<div class='form-group mb-1'>
-					<label for="phone">Phone number:</label>
-					<input type="text" class='form-control' aria-describedby="phone_help" id="phone" name="phone">
-					<small id="phone_help" class="form-text text-muted">Format: XXX-YYY-ZZZZ</small>
+					<label for="phone">Phone number:</label><br>
+					<input type="tel" class='form-control' aria-describedby="phone_help" id="phone" name="phone">
+					<!-- <small id="phone_help" class="form-text text-muted">Format: XXX-YYY-ZZZZ</small> -->
 				</div>
 	
 				<div class='form-group mb-1'>

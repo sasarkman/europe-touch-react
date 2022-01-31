@@ -1,5 +1,8 @@
 console.log("account.js");
 
+// Module for credentials loading
+require('dotenv').config();
+
 var express = require('express');
 var router = express.Router();
 
@@ -21,6 +24,16 @@ const tokenGen = require('crypto');
 var AccountModel = require('../models/account-model');
 var AppointmentModel = require('../models/appointment-model');
 var TokenModel = require('../models/token-model');
+
+// Emailer
+const nodemailer = require('nodemailer');
+const emailer = nodemailer.createTransport({
+	service: process.env.EMAIL_SERVICE,
+	auth: {
+		user: process.env.EMAIL_ADDR,
+		pass: process.env.EMAIL_PASS
+	}
+});
 
 router.route('/').
 	get(
@@ -66,7 +79,7 @@ router.route('/login').
 		function(req, res) {
 			const errors = validationResult(req);
 			if(!errors.isEmpty()) {
-				return res.status(422).json({ msg: 'Invalid input' });
+				return res.status(422).json({ msg: 'Account does not exist or password is incorrect' });
 			}
 
 			var email = req.body.email;
@@ -74,10 +87,10 @@ router.route('/login').
 			
 			// Query database for account with this email
 			AccountModel.findOne({email}, function(err, record) {
-				if(err) res.send(err);
-				else if(record) {
+				if(err || !record) return res.status(400).json({ msg: 'Account does not exist or password is incorrect'});
+				else {
 					record.comparePassword(password, function(err, isMatch) {
-						if(err) res.send(err);
+						if(err) res.status(400).json({ msg: 'Server error'});
 						if(isMatch) {
 							// Is account confirmed?
 							if(!record.confirmed) {
@@ -92,8 +105,6 @@ router.route('/login').
 							return res.status(400).json({ msg: 'Account does not exist or password is incorrect'});
 						}
 					});
-				} else {
-					return res.status(400).json({ msg: 'Account does not exist or password is incorrect'});
 				}
 			});
 		}
@@ -143,6 +154,24 @@ router.route('/create').
 						res.status(400).json({ msg: 'Bad request.'});
 					}
 				} else {
+					const mailOptions = {
+						from: process.env.EMAIL_FROM,
+						to: result.email,
+						subject: 'Account confirmation',
+						text: `
+							Hello ${result.name},
+							Please follow this link to activate your account: http://localhost:3000/account/confirm/${result._id}
+						`
+					};
+				
+					emailer.sendMail(mailOptions, function (error, info) {
+						if (error) {
+							console.log(error);
+						} else {
+							console.log(`Email sent to ${result.email}: ${info.response}`);
+						}
+					});
+
 					res.status(200).json({ msg: `Account created! Please confirm your account by following the link sent to: ${req.body.email}.`});
 				}
 			});
@@ -250,7 +279,7 @@ router.route('/confirm/:token?').
 							}
 							else {
 								console.log('4');
-								return res.status(200).json({ msg: 'Successfully confirmed account.'});
+								return res.status(200).json({ msg: 'Successfully confirmed account!'});
 							}
 						});
 					}
@@ -290,27 +319,57 @@ router.route('/forgotPassword').
 				'email': email
 			}
 
-			new TokenModel(query).save(function(err, result) {
-				if(err) {
-					console.log(err);
-					res.status(400).json({ msg: 'Server error.' });
+			AccountModel.findOne({ email: email }, function(err, account) {
+				if(err) return res.status(400).json({ msg: 'Server error' });
+				else if(!account) {
+					// Even if the account doesn't exist, we still want to indicate success
+					return res.status(200).json({ msg: `Password reset link has been sent to: ${email}.` });
 				}
 				else {
-					const deleteQuery = {
-						'email': email, 
-						'token': { $nin: token }
-					}
-
-					// Delete all previous tokens
-					TokenModel.deleteMany(deleteQuery, function(err, result) {
-						if(err) return res.status(400).json({ msg: 'Server error.' });
+					new TokenModel(query).save(function(err, result) {
+						if(err) {
+							console.log(err);
+							res.status(400).json({ msg: 'Server error.' });
+						}
 						else {
-							console.log(`Deleted ${result.deletedCount} tokens`);
-							return res.status(200).json({ msg: `Password reset link has been sent to: ${email}.`});
+							const deleteQuery = {
+								'email': email, 
+								'token': { $nin: token }
+							}
+		
+							// Delete all previous tokens
+							TokenModel.deleteMany(deleteQuery, function(err, result) {
+								if(err) return res.status(400).json({ msg: 'Server error.' });
+								else {
+									console.log(`Deleted ${result.deletedCount} tokens`);
+		
+									return res.status(200).json({ msg: `Password reset link has been sent to: ${email}. <b>You may need to check your spam folder.<b>`});
+								}
+							})
+		
+							// Send e-mail
+							const mailOptions = {
+								from: process.env.EMAIL_FROM,
+								to: email,
+								subject: 'Password reset request',
+								text: `
+									Hello,
+									Please follow this link to reset your password: http://${process.env.PUB_IP}:3000/account/resetPassword/${token}
+								`
+							};
+						
+							emailer.sendMail(mailOptions, function (error, info) {
+								if (error) {
+									console.log(error);
+								} else {
+									console.log('Email sent: ' + info.response + ' to ' + email);
+								}
+							});
 						}
 					})
 				}
-			})
+			});
+			
 		}
 	)
 ;

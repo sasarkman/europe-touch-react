@@ -31,37 +31,30 @@ $(function () {
 			var startTime = new Date(event.event.start).toLocaleTimeString('en-US');
 			var createdDate = new Date(appointment.created).toLocaleString('en-US');
 			var status = appointment.approved ? 'confirmed' : 'not confirmed';
+			var statusColor = appointment.approved ? 'text-success' : 'text-danger';
 
-			eventModal.find('#title').html(appointment.account.name);
+			eventModal.find('#title').html(`${appointment.account.name}'s appointment`);
+
+			// Customer fields
+			eventModal.find('#age').html(appointment.account.age);
+			eventModal.find('#phone').html(appointment.account.phone);
+			eventModal.find('#email').html(appointment.account.email);
 
 			// Service fields
 			eventModal.find('#service').html(appointment.service.name);
 			eventModal.find('#service').attr('value', appointment._id);
-
-			// Service popover
-			$('#service-info').popover({content: `
-				Duration: ${appointment.service.duration}<br>
-				Price: \$${appointment.service.price}<br>
-				Description: ${appointment.service.description}
-			`, html: true});
+			eventModal.find('#duration').html(appointment.service.duration);
+			eventModal.find('#price').html(appointment.service.price);
+			eventModal.find('#description').html(appointment.service.description);
 
 			// Appointment fields
-			eventModal.find('#appointment').html(startTime);
-			$('#appointment-info').popover({content: `
-				Created: ${appointment.created}
-			`, html: true});
-
-			// Account fields
-			eventModal.find('#customer').html(appointment.account.name);
-			$('#customer-info').popover({content: `
-				Age: ${appointment.account.age}<br>
-				Phone #: ${appointment.account.phone}<br>
-				E-mail: ${appointment.account.email}
-			`, html: true});
+			eventModal.find('#start').html(startTime);
+			eventModal.find('#created').html(createdDate);
 
 			// Confirmation info
 			eventModal.find('#status').html(status);
-			$('#confirmation-info').popover({content: 'Appointments will be confirmed/unconfirmed by Edina and the customer will receive a notification.', html: true});
+			eventModal.find('#status').attr('class', statusColor);
+			$('#status-info').popover({content: 'Appointments will be confirmed/unconfirmed by Edina and the customer will receive a notification.', html: true});
 
 			if(appointment.approved) {
 				showButton('#unconfirm-appointment')
@@ -78,7 +71,7 @@ $(function () {
 			{
 				url: '/appointment/getall/',
 				extraParams: {
-					't': 'a'
+					't': 'c'
 				},
 				color: 'green'
 			},
@@ -119,6 +112,9 @@ $(function () {
 					calendar.getEventById(appointmentID).setProp('color', 'green');
 					calendar.getEventById(appointmentID).setExtendedProp('approved', true);
 
+					eventModal.find('#status').html('confirmed');
+					eventModal.find('#status').attr('class', 'text-success');
+
 					alertShow(statusText, 'alert-success');
 					hideButton('#confirm-appointment');
 					showButton('#unconfirm-appointment');
@@ -155,6 +151,9 @@ $(function () {
 					case 200:
 						calendar.getEventById(appointmentID).setProp('color', 'red');
 						calendar.getEventById(appointmentID).setExtendedProp('approved', false);
+
+						eventModal.find('#status').html('not confirmed');
+						eventModal.find('#status').attr('class', 'text-danger');
 
 						alertShow(statusText, 'alert-success');
 						hideButton('#unconfirm-appointment');

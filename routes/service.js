@@ -107,7 +107,12 @@ router.route('/getservices').
 		],
 		function(req, res) {
 			// Look up all records and return the records' "name" and "_id" fields
-			ServiceModel.find({}, '_id name', function(err, result) {
+			// ServiceModel.find({}, '_id name', function(err, result) {
+			// 	if(err || !result) return res.status(400).json({ msg: `Failed to retrieve services.`});
+			// 	else return res.status(200).json({ msg: 'Successfully retrieved services', data: result});
+			// });
+
+			ServiceModel.find({}, '_id name').sort({'name': 1}).exec(function(err, result) {
 				if(err || !result) return res.status(400).json({ msg: `Failed to retrieve services.`});
 				else return res.status(200).json({ msg: 'Successfully retrieved services', data: result});
 			});

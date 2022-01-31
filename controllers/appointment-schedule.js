@@ -1,4 +1,29 @@
 $(function() {
+	var validator = $('#main-form').validate({
+		rules: {
+			datetime: {
+				date: true,
+				required: true
+			},
+			check1: {
+				required: true
+			},
+			check2: {
+				required: true
+			}
+		},
+		messages: {
+			datetime: 'Please select a date and time',
+		},
+		errorElement: 'div',
+		errorPlacement: function ( error, element ) {
+			// Add the `help-block` class to the error element
+			error.addClass( "invalid-feedback" );
+
+			error.insertAfter( element );
+		}
+	});
+
 	const durationField = $('#duration');
 	const priceField = $('#price');
 	const descriptionField = $('#description');
@@ -14,6 +39,7 @@ $(function() {
 
 	$('#services').on('change', (e) => {
 		alertReset();
+		validator.resetForm();
 		$('.collapse').collapse('hide');
 
 		var statusCode = '';
@@ -68,10 +94,13 @@ $(function() {
 		// reset alert if need be
 		alertReset();
 
+		// exit if input isn't valid
+		if(!validator.form()) return;
+
 		// show spinner
 		showSpinner('#create_button', 'Creating...');
 
-		var service = $('#service').val();
+		var service = $('#services').val();
 		var datetime = $('#datetime').val();
 
 		const settings = {
@@ -95,6 +124,7 @@ $(function() {
 
 				switch(statusCode) {
 					case 200:
+						statusText = `${statusText} View <a href="/appointment/viewall">appointments</a>.`;
 						$('#main-form').hide();
 						alertShow(statusText, 'alert-success');
 						break;

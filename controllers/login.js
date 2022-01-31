@@ -20,7 +20,7 @@ $(function () {
 
 			error.insertAfter( element );
 		}
-	})
+	});
 
 	$('#login_button').on('click', function() {
 		console.log('clicked');

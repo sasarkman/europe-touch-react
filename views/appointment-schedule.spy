@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<script type="text/javascript" src="/jquery.js"></script>
+	<script type="text/javascript" src="/jquery-validation.js"></script>
 	<script type="text/javascript" src="/bootstrap.js"></script>
 
 	<script type="text/javascript" src="/scripts/api.js"></script>
@@ -47,7 +48,21 @@
 
 					<div class='form-group mb-1'>
 						<label for="date">Date:</label>
-						<input type="datetime-local" class='form-control' id="datetime" name="datetime">
+						<input type="datetime-local" class='form-control' name="datetime">
+					</div>
+
+					<div class="form-check">
+						<input class="form-check-input" type="checkbox" name="check1">
+						<label class="form-check-label" for="flexCheckDefault">
+							I understand appointments must be confirmed by Edina before they are official
+						</label>
+					</div>
+
+					<div class="form-check">
+						<input class="form-check-input" type="checkbox" name="check2">
+						<label class="form-check-label" for="flexCheckDefault">
+							I understand payment is only accepted via cash or check
+						</label>
 					</div>
 
 					<button type="button" class="btn btn-primary" id="schedule_button">Schedule</button>

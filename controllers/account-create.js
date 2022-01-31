@@ -1,5 +1,18 @@
-jQuery(function () {
-	console.log('hello');
+$(function () {
+	// Initialize popover
+	$('[data-bs-toggle="popover"]').popover();
+
+	// Can't use jQuery here
+	const phoneInputField = document.querySelector("#phone");
+	const iti = window.intlTelInput(phoneInputField, {
+		utilsScript:
+		"https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
+	});
+
+	// Add phone validator
+	$.validator.addMethod('phone_number', function() {
+        return iti.isValidNumber();
+    });
 
 	var validator = $('#main-form').validate({
 		rules: {
@@ -14,9 +27,11 @@ jQuery(function () {
 				required: true
 			},
 			phone: {
+				phone_number: true,
 				required: true
 			},
 			age: {
+				number: true,
 				required: true
 			}
 		},
@@ -33,8 +48,10 @@ jQuery(function () {
 			error.addClass( "invalid-feedback" );
 
 			// If element has popover, insert after its parent
-			if ( element.parent('.input-group').length > 0 ) {
-				error.insertAfter( element.parent( ".input-group" ) );
+			if(element.parent('.input-group').length > 0 ) {
+				error.insertAfter( element.parent(".input-group"));
+			} else if(element.parent('.iti').length > 0) {
+				error.insertAfter( element.parent(".iti"));
 			} else {
 				error.insertAfter( element );
 			}
@@ -54,7 +71,8 @@ jQuery(function () {
 		var email = $('#email').val();
 		var password = $('#password').val();
 		var name = $('#name').val();
-		var phone = $('#phone').val();
+		// var phone = $('#phone').val();
+		var phone = iti.getNumber();
 		var age = $('#age').val();
 
 		const settings = {

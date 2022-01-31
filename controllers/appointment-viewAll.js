@@ -1,6 +1,5 @@
 $(function () {
 	var eventModal = $('#event_modal');
-	var confirmCancelModal = $("#confirmCancelModal");
 
 	var appointmentID = '';
 	var calendarEl = document.getElementById('calendar');
@@ -32,29 +31,23 @@ $(function () {
 			var startTime = new Date(event.event.start).toLocaleTimeString('en-US');
 			var createdDate = new Date(appointment.created).toLocaleString('en-US');
 			var status = appointment.approved ? 'confirmed' : 'not confirmed';
-
-			eventModal.find('#title').html(appointment.account.name);
+			var statusColor = appointment.approved ? 'text-success' : 'text-danger';
 
 			// Service fields
 			eventModal.find('#service').html(appointment.service.name);
 			eventModal.find('#service').attr('value', appointment._id);
-
-			// Service popover
-			$('#service-info').popover({content: `
-				Duration: ${appointment.service.duration}<br>
-				Price: \$${appointment.service.price}<br>
-				Description: ${appointment.service.description}
-			`, html: true});
+			eventModal.find('#duration').html(appointment.service.duration);
+			eventModal.find('#price').html(appointment.service.price);
+			eventModal.find('#description').html(appointment.service.description);
 
 			// Appointment fields
-			eventModal.find('#appointment').html(startTime);
-			$('#appointment-info').popover({content: `
-				Created: ${appointment.created}
-			`, html: true});
+			eventModal.find('#start').html(startTime);
+			eventModal.find('#created').html(createdDate);
 
 			// Confirmation info
 			eventModal.find('#status').html(status);
-			$('#confirmation-info').popover({content: 'Appointments will be confirmed/unconfirmed by Edina and the customer will receive a notification.', html: true});
+			eventModal.find('#status').attr('class', statusColor);
+			$('#status-info').popover({content: 'Appointments will be confirmed/unconfirmed by Edina and the customer will receive a notification.', html: true});
 
 			// Display the modal
 			eventModal.modal('show');

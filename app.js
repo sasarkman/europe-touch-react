@@ -58,7 +58,9 @@ const { check, validationResult } = require('express-validator');
 const bcrypt = require('bcrypt');
 
 // Initialize middlewares
-app.use(logger('dev'));
+// app.use(logger('dev'));
+// app.use(logger('combined'));
+app.use(logger('short'));
 
 // Initialize routes
 // app.use('/login', loginRouter);
@@ -74,6 +76,7 @@ app.set('views', path.join(__dirname, 'views'));
 // Expose directories
 app.use('/controllers', express.static(path.join(__dirname, 'controllers')));
 app.use('/scripts', express.static(path.join(__dirname, 'scripts')));
+app.use('/img', express.static(path.join(__dirname, 'img')));
 
 app.use('/jquery.js', express.static(path.join(__dirname, 'node_modules/jquery/dist/jquery.js')));
 app.use('/jquery-ui.js', express.static(path.join(__dirname, 'node_modules/jquery-ui-dist/jquery-ui.js')));
@@ -87,11 +90,16 @@ app.use('/font-awesome.css', express.static(path.join(__dirname, 'node_modules/f
 app.use('/fullcalendar.js', express.static(path.join(__dirname, 'node_modules/fullcalendar/main.js')));
 app.use('/fullcalendar.css', express.static(path.join(__dirname, 'node_modules/fullcalendar/main.css')));
 
+app.use('/intl-tel-input.js', express.static(path.join(__dirname, 'node_modules/intl-tel-input/build/js/intlTelInput.min.js')));
+app.use('/img/flags.png', express.static(path.join(__dirname, 'node_modules/intl-tel-input/build/img/flags.png')));
+app.use('/intl-tel-input.css', express.static(path.join(__dirname, 'node_modules/intl-tel-input/build/css/intlTelInput.min.css')));
+
 // Mongodb connection string
 const mongo_url = process.env.MONGODB_URL;
 
 // Express IP and port info
 app.set('port', process.env.PORT);
+app.set('ip', process.env.IP);
 
 mongoose.connect(mongo_url, { useNewUrlParser:true, useUnifiedTopology:true }, (err) => {
 	if (err) {
@@ -108,6 +116,6 @@ app.get('/', isLoggedIn, function(req, res) {
 
 module.exports = app;
 
-app.listen(app.get('port'), function() {
-	console.log(`Example app listening on port ${app.get('port')}`);
+app.listen(app.get('port'), app.get('ip'), function() {
+	console.log(`Example app listening on port ${app.get('ip')}:${app.get('port')}`);
 });

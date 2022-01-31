@@ -5,22 +5,38 @@
 	<div class="modal-dialog" role="document">
 	<div class="modal-content">
 		<div class="modal-header">
-			<h5 class="modal-title" id="title"></h5>
-			<button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-				<span aria-hidden="true">&times;</span>
-			</button>
+			<h5 class="modal-title" id="title">My appointment</h5>
 		</div>
 
 		<div class="modal-body">
-			<div>Service: <label id='service'></label>
-				<button type="button" class="btn btn-secondary btn-sm" data-bs-trigger="focus" data-bs-toggle="popover" data-bs-placement="right" id='service-info'>?</button>
-			</div>
-			<div>Appointment: <label id='appointment'></label>
-				<button type="button" class="btn btn-secondary btn-sm" data-bs-trigger="focus" data-bs-toggle="popover" data-bs-placement="right" id='appointment-info'>?</button>
-			</div>
-			<div>Appointment confirmed: <label id='status'></label>
-				<button type="button" class="btn btn-secondary btn-sm" data-bs-trigger="focus" data-bs-toggle="popover" data-bs-placement="right" id='confirmation-info'>?</button>
-			</div>
+			<h5>Service:</h5>
+			<dl class="row">
+				<dt class="col-3">Name</dt>
+				<dd class="col-9" id="service"></dd>
+
+				<dt class="col-3">Duration</dt>
+				<dd class="col-9" id="duration"></dd>
+
+				<dt class="col-3">Price</dt>
+				<dd class="col-9" id="price"></dd>
+
+				<dt class="col-3">Description</dt>
+				<dd class="col-9" id="description"></dd>
+			</dl>
+		
+			<h5>Appointment: <label id='appointment'></label></h5>
+			<dl class="row">
+				<dt class="col-3">Start</dt>
+				<dd class="col-9" id="start"></dd>
+
+				<dt class="col-3">Created</dt>
+				<dd class="col-9" id="created"></dd>
+			</dl>
+
+			<h5>Status: 
+				<label id='status'></label>
+				<button type="button" class="btn btn-secondary btn-sm" data-bs-trigger="focus" data-bs-toggle="popover" data-bs-placement="right" id='status-info'>?</button>
+			</h5>
 		</div>
 
 		<div class="modal-footer">
@@ -36,7 +52,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                Deleting appointment
+				<h5 class="modal-title" id="title">Deleting appointment</h5>
 				<div class="alert d-none" role="alert" id="alert"></div>
 			</div>
             <div class="modal-body">
