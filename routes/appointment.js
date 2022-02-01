@@ -97,7 +97,6 @@ router.route('/getall/').
 				auth.isLoggedIn,
 			],
 			function(req, res) {
-				// console.log(req.session.user);
 				const id = new mongoose.Types.ObjectId(req.session.user._id);
 
 				// Final query output structure
@@ -167,9 +166,9 @@ router.route('/getall/').
 				sevenDays = new Date( today.valueOf() + ( 7 * oneDay ) );
 
 				// TODO: Need more work here
-				query.datetime = {
-					"$gte": oneDayBehind,
-				}
+				// query.datetime = {
+				// 	"$gte": oneDayBehind,
+				// }
 
 				AppointmentModel.aggregate([
 					{

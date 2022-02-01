@@ -25,6 +25,7 @@
     "fullcalendar": "^5.10.1",
     "intl-tel-input": "^17.0.15",
     "jquery": "^3.6.0",
+    "jquery-datetimepicker": "^2.5.21",
     "jquery-ui-dist": "^1.12.1",
     "jquery-validation": "^1.19.3",
     "jsonwebtoken": "^8.5.1",

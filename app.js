@@ -94,6 +94,9 @@ app.use('/intl-tel-input.js', express.static(path.join(__dirname, 'node_modules/
 app.use('/img/flags.png', express.static(path.join(__dirname, 'node_modules/intl-tel-input/build/img/flags.png')));
 app.use('/intl-tel-input.css', express.static(path.join(__dirname, 'node_modules/intl-tel-input/build/css/intlTelInput.min.css')));
 
+app.use('/datetimepicker.js', express.static(path.join(__dirname, 'node_modules/jquery-datetimepicker/build/jquery.datetimepicker.full.min.js')));
+app.use('/datetimepicker.css', express.static(path.join(__dirname, 'node_modules/jquery-datetimepicker/build/jquery.datetimepicker.min.css')));
+
 // Mongodb connection string
 const mongo_url = process.env.MONGODB_URL;
 

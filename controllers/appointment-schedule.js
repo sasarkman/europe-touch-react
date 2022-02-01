@@ -24,6 +24,19 @@ $(function() {
 		}
 	});
 
+
+	$("#datetime").datetimepicker({
+		inline:true,
+		format:'Y-m-d',
+		formatTime: 'h:i A', // hour: minute AM/PM
+		minDate:'0',// 0 = today
+		minTime:'9:00', // 9AM
+		maxTime:'17:00', // 5PM
+		defaultTime: '09:00',
+		disabledWeekDays: [0], // disable sundays
+		step: 30
+	});
+
 	const durationField = $('#duration');
 	const priceField = $('#price');
 	const descriptionField = $('#description');
@@ -101,7 +114,8 @@ $(function() {
 		showSpinner('#create_button', 'Creating...');
 
 		var service = $('#services').val();
-		var datetime = $('#datetime').val();
+		var dateTime = $('#datetime').datetimepicker('getValue');
+		var isoDateTime = new Date(dateTime).toISOString();
 
 		const settings = {
 			method: 'POST',
@@ -111,7 +125,7 @@ $(function() {
 			},
 			body: JSON.stringify({
 				'service': service,
-				'datetime': datetime,
+				'datetime': isoDateTime,
 			})
 		}
 

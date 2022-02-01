@@ -11,6 +11,7 @@ $(function () {
 			center: 'title',
 			end: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth'
 		},
+		timeZone: 'local',
 		views: {
 			dayGridMonth: { buttonText: "Month" },
 			timeGridWeek: { buttonText: "Week" },
@@ -25,11 +26,15 @@ $(function () {
 			meridiem: 'short'
 		},
 		eventClick: function(event) {
+
 			var appointment = event.event.extendedProps;
 			appointmentID = appointment._id;
+
 			
-			var startTime = new Date(event.event.start).toLocaleTimeString('en-US');
-			var createdDate = new Date(appointment.created).toLocaleString('en-US');
+			// var startTime = new Date(event.event.start).toLocaleTimeString('en-US');
+			const dateOptions = {year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute:'2-digit'};
+			var startTime = new Date(event.event.start).toLocaleTimeString('en-US', {hour: '2-digit', minute:'2-digit'});
+			var createdDate = new Date(appointment.created).toLocaleString('en-US', dateOptions);
 			var status = appointment.approved ? 'confirmed' : 'not confirmed';
 			var statusColor = appointment.approved ? 'text-success' : 'text-danger';
 
