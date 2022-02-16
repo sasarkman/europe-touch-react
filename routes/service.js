@@ -27,8 +27,6 @@ router.route('/').
 			var query = {};
 			var settings = '_id name'; // return only id and name for mass query
 
-			console.log(`id: ${req.query.id}`);
-
 			// Was a service ID passed in?
 			if(req.query.id) {
 				// Is it a valid mongoose ObjectID?
@@ -61,7 +59,6 @@ router.route('/').
 			var description = req.body.description;
 
 			var params = {name, duration, price, description};
-			console.log(params);
 
 			var new_service = new ServiceModel(params);
 			new_service.save(function(err, result) {
@@ -72,7 +69,6 @@ router.route('/').
 						res.status(400).json({ msg: 'Bad request'});
 					}
 				} else {
-					console.log(`service created: ${name}`);
 					return res.status(200).json({ msg: `Service created!` });
 				}
 			});

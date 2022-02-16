@@ -65,13 +65,45 @@ const { check, validationResult } = require('express-validator');
 // Load password hashing module
 const bcrypt = require('bcrypt');
 
-// Initialize middlewares
-// app.use(logger('dev'));
-// app.use(logger('combined'));
-app.use(logger('short'));
+// Define custom logging tokens
+logger.token('timestamp', function(req, res) { return timestamp });
+logger.token('request-body', (req, res) => {return req.body});
+logger.token('request-params', (req, res) => {return req.params});
+logger.token('request-query', (req, res) => {return req.query});
+
+// Initialize logging settings
+app.use(logger(function(tokens, req, res) {
+	// Log email if known
+	var email = '';
+	if(req.session) {
+		if(req.session.user) {
+		email = '(' + req.session.user.email + ')';
+		}
+	}
+
+	// Timestamp
+	var today = new Date();
+	const timestamp = '[' + (today.getMonth()+1) + '/' + today.getDate() + '/' + today.getFullYear().toString().slice(2,4) + ' ' + today.getHours() + ':' + today.getMinutes() + ':' + today.getSeconds() + ']';
+
+	var output = `${timestamp} ${tokens['remote-addr'](req,res)} ${email}: ${tokens.method(req,res)} ${tokens.url(req,res)} ${tokens.status(req,res)} ${tokens['response-time'](req,res)}ms`;
+
+	const body = tokens['request-body'](req,res);
+	const params = tokens['request-params'](req,res);
+	const query = tokens['request-query'](req,res);
+
+	// Body if exists
+	if(Object.keys(body).length != 0) output = output.concat('\nbody: ' + JSON.stringify(body, null, '\t'));
+
+	// Query if exists
+	if(Object.keys(params).length != 0) output = output.concat('\nparams: ' + JSON.stringify(params, null, '\t'));
+
+	// // Params if exists
+	if(Object.keys(query).length != 0) output = output.concat('\nquery: ' + JSON.stringify(query, null, '\t'));
+
+	return output;
+}));
 
 // Initialize routes
-// app.use('/login', loginRouter);
 app.use('/account', accountRouter);
 app.use('/service', serviceRouter);
 app.use('/appointment', appointmentRouter);

@@ -88,7 +88,6 @@ router.route('/').
 
 			// Appointment type may come into request inside a query payload
 			var type =  req.query.type;
-			console.log(`type: ${type}`);
 
 			// Construct a different query based on user type
 			if(admin) {
@@ -183,7 +182,6 @@ router.route('/').
 			check('service').notEmpty()
 		],
 		function(req, res) {
-			console.log("not right");
 			const errors = validationResult(req);
 			if(!errors.isEmpty()) {
 				return res.status(422).json({ msg: 'Invalid input' });
@@ -273,7 +271,7 @@ router.route('/').
 								// Send SMS text
 								texter.messages
 									.create({
-										to: '+12085854971',
+										to: process.env.TEMPNUM,
 										from: process.env.TWILIO_NUMBER,
 										body: `${account.name} has cancelled their appointment at ${result.datetime}. Their phone number is ${account.phone}. - Europe Touch Massage`
 									})
