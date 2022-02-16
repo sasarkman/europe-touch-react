@@ -3,6 +3,19 @@ var bcrypt = require('bcrypt');
 var SALT_WORK_FACTOR = 10;
 var Schema = mongoose.Schema;
 
+// Module for credentials loading
+require('dotenv').config();
+
+// Emailer
+const nodemailer = require('nodemailer');
+const emailer = nodemailer.createTransport({
+	service: process.env.EMAIL_SERVICE,
+	auth: {
+		user: process.env.EMAIL_ADDR,
+		pass: process.env.EMAIL_PASS
+	}
+});
+
 var AccountSchema = new mongoose.Schema({
 	email: {
 		type: String, 
@@ -37,7 +50,6 @@ var AccountSchema = new mongoose.Schema({
 });
 
 AccountSchema.pre('save', function(next) {
-	this.wasNew = this.isNew;
 	var account = this;
 
 	if(!account.isModified('password')) return next();
@@ -54,13 +66,28 @@ AccountSchema.pre('save', function(next) {
 	})
 });
 
-AccountSchema.post('save', function(doc, next) {
-	var account = this;
+AccountSchema.post('save', function(account, next) {
+	console.log(`http://localhost:3000/account/confirm/${this._id}`);
 
-	if(this.wasNew) {
-		console.log(`http://localhost:3000/account/confirm/${this._id}`);
-		// send confirmation e-mail
-	}
+	// TODO: create confirmation token instead of using account _id
+
+	const mailOptions = {
+		from: process.env.EMAIL_FROM,
+		to: account.email,
+		subject: 'Account confirmation',
+		text: `
+			Hello ${account.name},
+			Please follow this link to activate your account: http://localhost:3000/account/confirm/${account._id}
+		`
+	};
+
+	emailer.sendMail(mailOptions, function (error, info) {
+		if (error) {
+			console.log(error);
+		} else {
+			console.log(`Email sent to ${account.email}: ${info.response}`);
+		}
+	});
 
 	next();
 })
@@ -73,4 +100,3 @@ AccountSchema.methods.comparePassword = function(candidatePassword, callback) {
 }
 
 module.exports = mongoose.model('accounts', AccountSchema);
-

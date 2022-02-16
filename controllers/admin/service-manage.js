@@ -46,9 +46,17 @@ $(function() {
 		$('.collapse').collapse('hide');
 		const serviceID = e.target.value;
 
+		const settings = { 
+			method: 'GET',
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json',
+			},
+		}
+
 		var statusCode = '';
 		var statusText = '';
-		new API().request(`/service/getservice/${serviceID}`).then(response => {
+		new API().request(`/service/?id=${serviceID}`, settings).then((response) => {
 			statusCode = response.status;
 			statusText = response.msg;
 
@@ -75,9 +83,17 @@ $(function() {
 		});
 	})
 
+	const settings = { 
+		method: 'GET',
+		headers: {
+			'Accept': 'application/json',
+			'Content-Type': 'application/json',
+		},
+	}
+
 	var statusCode = '';
 	var statusText = '';
-	new API().request('/service/getservices').then((response) => {
+	new API().request('/service/', settings).then((response) => {
 		statusCode = response.status;
 		statusText = response.msg;
 
@@ -106,7 +122,7 @@ $(function() {
 		showSpinner('#save-button', 'Saving...');
 
 		const settings = {
-			method: 'POST',
+			method: 'PUT',
 			headers: {
 				'Accept': 'application/json',
 				'Content-Type': 'application/json',
@@ -122,7 +138,7 @@ $(function() {
 
 		var statusCode = '';
 		var statusText = '';
-		new API().request('/service/edit', settings)
+		new API().request('/service/', settings)
 			// new Service().editService(settings)
 			.then( response => {
 				statusCode = response.status;
@@ -156,7 +172,7 @@ $(function() {
 			});
 		}).then(function (val) {
 			const settings = {
-				method: 'POST',
+				method: 'DELETE',
 				headers: {
 					'Accept': 'application/json',
 					'Content-Type': 'application/json',
@@ -170,35 +186,32 @@ $(function() {
 	
 			var statusCode = '';
 			var statusText = '';
-			new API().request('/service/delete', settings)
-			// new Service().deleteService(settings)
-				.then( response => {
-					$('#confirm_delete_modal').modal('hide');
-					statusCode = response.status;
-					statusText = response.msg;
-	
-					switch(statusCode) {
-						case 200:
-							// Update the dropdown
-							const option = $('#services option:checked');
-							option.remove();
+			new API().request('/service/', settings).then( response => {
+				$('#confirm_delete_modal').modal('hide');
+				statusCode = response.status;
+				statusText = response.msg;
 
-							$('#services').trigger('change');
-							alertShow(alertText, 'alert-success');
-				
-							enableButton($(this));
-							$(this).text('Delete');
-							break;
-						default:
-							hideSpinner('#confirm_delete', 'Yes');
-							alertShow('Server error', 'alert-danger');
-							$('#confirm_delete_modal').modal('hide');
-							break
-					}
-	
-					hideSpinner('#confirm_delete', 'Yes');
-				})
+				switch(statusCode) {
+					case 200:
+						// Update the dropdown
+						const option = $('#services option:checked');
+						option.remove();
 
+						$('#services').trigger('change');
+						alertShow(alertText, 'alert-success');
+			
+						enableButton($(this));
+						$(this).text('Delete');
+						break;
+					default:
+						hideSpinner('#confirm_delete', 'Yes');
+						alertShow('Server error', 'alert-danger');
+						$('#confirm_delete_modal').modal('hide');
+						break
+				}
+
+				hideSpinner('#confirm_delete', 'Yes');
+			})
 		}).catch(function (err) {
 			console.log(err)
 		});		

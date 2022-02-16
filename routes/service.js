@@ -21,20 +21,28 @@ var ServiceModel = require('../models/service-model');
 router.route('/').
 	get(
 		[
-			auth.isAdmin
+			auth.isLoggedIn
 		],
 		function(req, res) {
-			res.render('admin/service-manage', {});
-		}
-	);
+			var query = {};
+			var settings = '_id name'; // return only id and name for mass query
 
-router.route('/create').
-	get(
-		[
-			auth.isAdmin
-		],
-		function(req, res) {
-			res.render('service-create', {});
+			console.log(`id: ${req.query.id}`);
+
+			// Was a service ID passed in?
+			if(req.query.id) {
+				// Is it a valid mongoose ObjectID?
+				if(ObjectId.isValid(req.query.id)) {
+					const id = new mongoose.Types.ObjectId(req.query.id);
+					query = { _id: id };
+					settings = { '_id': false}; // return everything but id for single query
+				}
+			}
+
+			ServiceModel.find(query, settings).sort({'name': 1}).exec(function(err, result) {
+				if(err || !result) return res.status(400).json({ msg: `Failed to retrieve services.`});
+				else return res.status(200).json({ msg: 'Successfully retrieved services', data: result});
+			});
 		}
 	).
 	post(
@@ -69,11 +77,41 @@ router.route('/create').
 				}
 			});
 		}
-	)
-;
+	).
+	put(
+		[
+			auth.isAdmin,
+			check('id').custom(value => {
+				return ObjectId.isValid(value);
+			}),
+			check(['name', 'duration', 'price', 'description']).notEmpty(),
+		],
+		function(req, res) {
+			const errors = validationResult(req);
+			if(!errors.isEmpty()) {
+				return res.status(422).json({ msg: 'Invalid input' });
+			}
 
-router.route('/delete').
-	post(
+			const id = new mongoose.Types.ObjectId(req.body.id);
+			const name = req.body.name;
+			const duration = req.body.duration;
+			const price = req.body.price;
+			const description = req.body.description;
+
+			const query = {
+				name: name,
+				duration: duration,
+				price: price,
+				description: description,
+			}
+
+			ServiceModel.findByIdAndUpdate(id, query, {new:true}, function (err, result) {
+				if(err || !result) return res.status(400).json({ msg: 'Failed to save changes.'});
+				else return res.status(200).json({ msg: 'Changes saved!'});
+			})
+		}
+	).
+	delete(
 		[
 			auth.isAdmin,
 			check('id').custom(value => {
@@ -99,86 +137,28 @@ router.route('/delete').
 			});
 		}
 	)
+;
 
-router.route('/getservices').
+router.route('/manage').
 	get(
 		[
-			auth.isLoggedIn
+			auth.isAdmin
 		],
 		function(req, res) {
-			// Look up all records and return the records' "name" and "_id" fields
-			// ServiceModel.find({}, '_id name', function(err, result) {
-			// 	if(err || !result) return res.status(400).json({ msg: `Failed to retrieve services.`});
-			// 	else return res.status(200).json({ msg: 'Successfully retrieved services', data: result});
-			// });
-
-			ServiceModel.find({}, '_id name').sort({'name': 1}).exec(function(err, result) {
-				if(err || !result) return res.status(400).json({ msg: `Failed to retrieve services.`});
-				else return res.status(200).json({ msg: 'Successfully retrieved services', data: result});
-			});
+			res.render('admin/service-manage', {});
 		}
 	)
+;
 
-router.route('/getservice/:id').
+router.route('/create').
 	get(
 		[
-			auth.isLoggedIn,
-			check('id').custom(value => {
-				return ObjectId.isValid(value);
-			}),
+			auth.isAdmin
 		],
 		function(req, res) {
-			const errors = validationResult(req);
-			if(!errors.isEmpty()) {
-				return res.status(422).json({ msg: 'Invalid input' });
-			}
-
-			const id = req.params.id;
-
-			ServiceModel.find({_id: id}, {'_id': false}, function(err, result) {
-				if(err) res.status(400).json({ msg: 'Failed to get service.'})
-				if(result) {
-					return res.status(200).json({ msg: 'Successfully retrieved service!', data: result });
-				}
-			});
-
+			res.render('service-create', {});
 		}
 	)
-
-router.route('/edit').
-	post(
-		[
-			auth.isAdmin,
-			check('id').custom(value => {
-				return ObjectId.isValid(value);
-			}),
-			check(['name', 'duration', 'price', 'description']).notEmpty(),
-		],
-		function(req, res) {
-			const errors = validationResult(req);
-			if(!errors.isEmpty()) {
-				return res.status(422).json({ msg: 'Invalid input' });
-			}
-
-			const id = new mongoose.Types.ObjectId(req.body.id);
-			const name = req.body.name;
-			const duration = req.body.duration;
-			const price = req.body.price;
-			const description = req.body.description;
-			console.log(id);
-
-			const query = {
-				name: name,
-				duration: duration,
-				price: price,
-				description: description,
-			}
-
-			ServiceModel.findByIdAndUpdate(id, query, {new:true}, function (err, result) {
-				if(err || !result) return res.status(400).json({ msg: 'Failed to save changes.'});
-				else return res.status(200).json({ msg: 'Changes saved!'});
-			})
-		}
-	)
+;
 
 module.exports = router;

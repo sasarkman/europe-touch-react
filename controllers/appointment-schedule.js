@@ -42,23 +42,25 @@ $(function() {
 	const descriptionField = $('#description');
 	const servicesSelector = $('#services');
 
-	const settings = {
-		method: 'GET',
-		headers: {
-			'Accept': 'application/json',
-			'Content-Type': 'application/json',
-		},
-	}
-
 	$('#services').on('change', (e) => {
 		alertReset();
 		validator.resetForm();
 		$('.collapse').collapse('hide');
 
+		var serviceID = e.target.value;
+
+		const settings = {
+			method: 'GET',
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json',
+			},
+		}
+
 		var statusCode = '';
 		var statusText = '';
-		var serviceID = e.target.value;
-		new API().request(`/service/getservice/${serviceID}`, settings).then(response => {
+		
+		new API().request(`/service/?id=${serviceID}`, settings).then(response => {
 			statusCode = response.status;
 			statusText = response.msg;
 
@@ -81,9 +83,17 @@ $(function() {
 		});
 	})
 
+	const settings = {
+		method: 'GET',
+		headers: {
+			'Accept': 'application/json',
+			'Content-Type': 'application/json',
+		},
+	}
+
 	var statusCode = '';
 	var statusText = '';
-	new API().request('/service/getservices', settings).then(response => {
+	new API().request('/service/', settings).then(response => {
 		statusCode = response.status;
 		statusText = response.msg;
 
@@ -131,7 +141,7 @@ $(function() {
 
 		var statusCode = '';
 		var statusText = '';
-		new API().request('/appointment/schedule', settings)
+		new API().request('/appointment/', settings)
 			.then(response => {
 				statusCode = response.status;
 				statusText = response.msg;

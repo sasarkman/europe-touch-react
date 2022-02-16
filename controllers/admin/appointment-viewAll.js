@@ -69,16 +69,16 @@ $(function () {
 		},
 		eventSources: [
 			{
-				url: '/appointment/getall/',
+				url: '/appointment/',
 				extraParams: {
-					't': 'c'
+					'type': 'confirmed'
 				},
 				color: 'green'
 			},
 			{
-				url: '/appointment/getall/',
+				url: '/appointment/',
 				extraParams: {
-					't': 'u'
+					'type': 'unconfirmed'
 				},
 				color: 'red'
 			}
@@ -92,7 +92,7 @@ $(function () {
 	$('#confirm-appointment').on('click', function() {
 		alertReset();
 		showSpinner('#confirm-appointment', 'Confirming...');
-		const settings = {
+		const settings = { 
 			method: 'POST',
 			headers: {
 				'Accept': 'application/json',

@@ -3,6 +3,8 @@ var bcrypt = require('bcrypt');
 var SALT_WORK_FACTOR = 10;
 var Schema = mongoose.Schema;
 
+var AccountModel = require('../models/account-model');
+
 var AppointmentSchema = new mongoose.Schema({
 	account: { 
 		type: mongoose.SchemaTypes.ObjectId, 

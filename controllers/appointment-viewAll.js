@@ -59,16 +59,16 @@ $(function () {
 		},
 		eventSources: [
 			{
-				url: '/appointment/getall/',
+				url: '/appointment/',
 				extraParams: {
-					't': 'c'
+					'type': 'confirmed'
 				},
 				color: 'green'
 			},
 			{
-				url: '/appointment/getall/',
+				url: '/appointment/',
 				extraParams: {
-					't': 'u'
+					'type': 'unconfirmed'
 				},
 				color: 'red'
 			}
@@ -99,7 +99,7 @@ $(function () {
 		}).then(function (val) {
 			hideSpinner('#confirm_cancel', 'Yes');
 			const settings = {
-				method: 'POST',
+				method: 'DELETE',
 				headers: {
 					'Accept': 'application/json',
 					'Content-Type': 'application/json',
@@ -109,7 +109,7 @@ $(function () {
 				})
 			}
 
-			new API().request('/appointment/cancel', settings).then(response => {
+			new API().request('/appointment/', settings).then(response => {
 				statusCode = response.status;
 				statusText = response.msg;
 

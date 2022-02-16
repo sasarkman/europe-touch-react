@@ -3,7 +3,6 @@
 	<script type="text/javascript" src="/jquery.js"></script>
 	<script type="text/javascript" src="/jquery-validation.js"></script>
 	<script type="text/javascript" src="/bootstrap.js"></script>
-	<script type="text/javascript" src="/scripts/service.js"></script>
 	<script type="text/javascript" src="/controllers/admin/service-manage.js"></script>
 	<script type="text/javascript" src="/scripts/api.js"></script>
 	<script type="text/javascript" src="/scripts/utilities.js"></script>

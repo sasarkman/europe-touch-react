@@ -35,6 +35,17 @@ const emailer = nodemailer.createTransport({
 	}
 });
 
+router.route('/create').
+	get(
+		[
+			auth.isNotLoggedIn
+		],
+		function(req, res) {
+			return res.render("account-create", {});
+		}
+	)
+;
+
 router.route('/').
 	get(
 		[
@@ -48,7 +59,7 @@ router.route('/').
 			if(isAdmin) {
 				HTML = `
 					<a href="/appointment/viewAll">View appointments</a>
-					<a href="/service/">Manage services</a>
+					<a href="/service/manage">Manage services</a>
 					<a href="/service/create">Create service</a>
 				`;
 			} else {
@@ -59,7 +70,41 @@ router.route('/').
 			}
 			res.render('account', { temp: HTML });
 		}
-);
+	).
+	post(
+		[
+			auth.isNotLoggedIn,
+			check('email').isEmail(),
+			check(['password', 'name', 'phone', 'age']).notEmpty(),
+		], function(req, res) {
+			const errors = validationResult(req);
+			if(!errors.isEmpty()) {
+				return res.status(422).json({ msg: 'Invalid input' });
+			}
+
+			var query = {
+				'email': req.body.email,
+				'password': req.body.password,
+				'name': req.body.name,
+				'phone': req.body.phone,
+				'age': req.body.age,
+			}
+
+			var newAccount = new AccountModel(query);
+			newAccount.save({isNew: true},function(err, result) {
+				if(err) {
+					if(err.code === 11000) {
+						return res.status(400).json({ msg: 'Account already exists!'});
+					} else {
+						return res.status(400).json({ msg: 'Bad request.'});
+					}
+				} else {
+					return res.status(200).json({ msg: `Account created! Please confirm your account by following the link sent to: ${req.body.email}.`});
+				}
+			});
+		}
+	)
+;
 
 router.route('/login').
 	get(
@@ -112,96 +157,15 @@ router.route('/login').
 ;
 
 router.route('/logout').all(auth.isLoggedIn, function(req, res) {
-	req.session.destroy();
-	return res.redirect('login');
+	req.session.destroy(function(err) {
+		if (err) {
+			console.error(err);
+		} else {
+			res.clearCookie('session_id');
+			res.redirect('/');
+		}
+	});
 });
-
-router.route('/create').
-	get(
-		[
-			auth.isNotLoggedIn
-		],
-		function(req, res) {
-			return res.render("account-create", {});
-		}
-	).
-	post(
-		[
-			auth.isNotLoggedIn,
-			check('email').isEmail(),
-			check(['password', 'name', 'phone', 'age']).notEmpty(),
-		], function(req, res) {
-			const errors = validationResult(req);
-			if(!errors.isEmpty()) {
-				return res.status(422).json({ msg: 'Invalid input' });
-			}
-
-			var query = {
-				'email': req.body.email,
-				'password': req.body.password,
-				'name': req.body.name,
-				'phone': req.body.phone,
-				'age': req.body.age,
-			}
-
-			var newAccount = new AccountModel(query);
-			newAccount.save(function(err, result) {
-				if(err) {
-					if(err.code === 11000) {
-						res.status(400).json({ msg: 'Account already exists!'});
-					} else {
-						console.log(err);
-						res.status(400).json({ msg: 'Bad request.'});
-					}
-				} else {
-					const mailOptions = {
-						from: process.env.EMAIL_FROM,
-						to: result.email,
-						subject: 'Account confirmation',
-						text: `
-							Hello ${result.name},
-							Please follow this link to activate your account: http://localhost:3000/account/confirm/${result._id}
-						`
-					};
-				
-					emailer.sendMail(mailOptions, function (error, info) {
-						if (error) {
-							console.log(error);
-						} else {
-							console.log(`Email sent to ${result.email}: ${info.response}`);
-						}
-					});
-
-					res.status(200).json({ msg: `Account created! Please confirm your account by following the link sent to: ${req.body.email}.`});
-				}
-			});
-		}
-	)
-// TODO: complete
-router.route('/deleteaccount').
-	post(
-		[
-			check('email', 'Invalid e-mail address').isEmail(),
-			check('password', 'Password was empty').notEmpty(),
-		], function(req, res) {
-			// var email = req.body.email;
-			// var password = req.body.password;
-
-			// // Query database for how many accounts with this email exist
-			// AccountModel.count({email}, function(err, count) {
-			// 	if(err) res.send(err);
-			// 	else if(count > 0) {
-			// 		console.log("Duplicate email: " + email);
-			// 		res.send("duplicate email");
-			// 	} else {
-			// 		var newAccount = new AccountModel({email, password});
-			// 		newAccount.save();
-			// 		res.send("all good!");
-			// 	}
-			// })
-		}
-	)
-;
 
 router.route('/confirm/:token?').
 	get(
@@ -214,7 +178,7 @@ router.route('/confirm/:token?').
 		function(req, res) {
 			const errors = validationResult(req);
 			if(!errors.isEmpty()) {
-				return res.status(422).json({ msg: errors.array() });
+				return res.status(422).json({ msg: "Invalid input" });
 			}
 
 			const url = req.headers.host;
@@ -253,7 +217,7 @@ router.route('/confirm/:token?').
 		function(req, res) {
 			const errors = validationResult(req);
 			if(!errors.isEmpty()) {
-				return res.status(422).json({ msg: errors.array() });
+				return res.status(422).json({ msg: "Invalid input" });
 			}
 
 			var id = mongoose.Types.ObjectId(req.params.token);
@@ -261,11 +225,8 @@ router.route('/confirm/:token?').
 			AccountModel.findOne({_id: id}, function(err, result) {
 				if(err) return res.status(400).json({ msg: 'Error confirming account.'})
 				else if(result) {
-					console.log('1');
-
 					// Is account confirmed?
 					if(result.confirmed) {
-						console.log('2');
 						return res.status(400).json({ msg: 'Error confirming account.'});
 					} else {
 						result.confirmed = true;
@@ -273,12 +234,10 @@ router.route('/confirm/:token?').
 						// Set it to confirmed
 						result.save(function(err, result) {
 							if(err) {
-								console.log('3');
-								console.log(err);
+								// console.log(err);
 								return res.status(400).json({ msg: 'Error confirming account.'});
 							}
 							else {
-								console.log('4');
 								return res.status(200).json({ msg: 'Successfully confirmed account!'});
 							}
 						});

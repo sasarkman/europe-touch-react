@@ -17,14 +17,22 @@ require('dotenv').config();
 // Load path module for filepaths
 const path = require('path');
 
-// Session/cookie module
+// Cookie module
 const session = require('express-session');
+
+// Filestore for cookies
+const session_store = require('session-file-store')(session);
+
 app.use(session({
 	name:'session_id',
 	secret: process.env.SESSION_SECRET,
-	saveUninitialized: true,
+	saveUninitialized: false,
 	resave: false,
-	// store:new FileStore()
+	cookie: {
+		expires: new Date(Date.now() + (1000 * 60 * 60 * 5)), // 5 hours
+		//secure: true // https only
+	},
+	store: new session_store()
 	// store: store
 }));
 
@@ -78,6 +86,7 @@ app.use('/controllers', express.static(path.join(__dirname, 'controllers')));
 app.use('/scripts', express.static(path.join(__dirname, 'scripts')));
 app.use('/img', express.static(path.join(__dirname, 'img')));
 
+// Expose modules
 app.use('/jquery.js', express.static(path.join(__dirname, 'node_modules/jquery/dist/jquery.js')));
 app.use('/jquery-ui.js', express.static(path.join(__dirname, 'node_modules/jquery-ui-dist/jquery-ui.js')));
 app.use('/jquery-validation.js', express.static(path.join(__dirname, 'node_modules/jquery-validation/dist/jquery.validate.js')));
@@ -96,6 +105,10 @@ app.use('/intl-tel-input.css', express.static(path.join(__dirname, 'node_modules
 
 app.use('/datetimepicker.js', express.static(path.join(__dirname, 'node_modules/jquery-datetimepicker/build/jquery.datetimepicker.full.min.js')));
 app.use('/datetimepicker.css', express.static(path.join(__dirname, 'node_modules/jquery-datetimepicker/build/jquery.datetimepicker.min.css')));
+
+// Expose pages
+// app.use('/viewAppointments', express.static(path.join(__dirname, 'views/appointment-viewAll.spy')));
+// app.use('/manageServices', express.static(path.join(__dirname, 'views/service-manage.spy')));
 
 // Mongodb connection string
 const mongo_url = process.env.MONGODB_URL;

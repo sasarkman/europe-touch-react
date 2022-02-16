@@ -5,6 +5,7 @@
 	<script type="text/javascript" src="/bootstrap.js"></script>
 
 	<script type="text/javascript" src="/scripts/utilities.js"></script>
+	<script type="text/javascript" src="/scripts/account-confirm.js"></script>
 
 	<link rel="stylesheet" type="text/css" href="/bootstrap.css">
 	<head>

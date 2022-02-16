@@ -92,7 +92,7 @@ $(function () {
 
 		var statusCode = '';
 		var statusText = '';
-		new API().request('/account/create', settings)
+		new API().request('/account/', settings)
 			.then(response => {
 				statusCode = response.status;
 				statusText = response.msg;

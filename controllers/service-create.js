@@ -65,7 +65,7 @@ $(function () {
 
 		var statusCode = '';
 		var statusText = '';
-		new API().request('/service/create', settings).then(response => {
+		new API().request('/service/', settings).then(response => {
 			statusCode = response.status;
 			statusText = response.msg;
 
