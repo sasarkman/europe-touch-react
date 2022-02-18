@@ -41,7 +41,7 @@ router.route('/create').
 			auth.isNotLoggedIn
 		],
 		function(req, res) {
-			return res.render("account-create", {});
+			return res.render('account-create', {});
 		}
 	)
 ;
@@ -68,7 +68,7 @@ router.route('/').
 					<a href="/appointment/schedule">Schedule appointment</a>
 				`;
 			}
-			res.render('account', { temp: HTML });
+			res.render('account-index', { temp: HTML });
 		}
 	).
 	post(
@@ -112,7 +112,7 @@ router.route('/login').
 			auth.isNotLoggedIn
 		],
 		function(req, res) {
-			res.render('login', {});
+			res.render('account-login', {});
 		}
 	).
 	post(

@@ -2,6 +2,9 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 
+// HTTPS
+const https = require('https');
+
 // Initialize express
 const app = express();
 //app.use(express.urlencoded({extended:true}));
@@ -17,6 +20,9 @@ require('dotenv').config();
 // Load path module for filepaths
 const path = require('path');
 
+// File system module
+const fs = require('fs');
+
 // Cookie module
 const session = require('express-session');
 
@@ -30,7 +36,7 @@ app.use(session({
 	resave: false,
 	cookie: {
 		expires: new Date(Date.now() + (1000 * 60 * 60 * 5)), // 5 hours
-		//secure: true // https only
+		secure: true // https only
 	},
 	store: new session_store()
 	// store: store
@@ -85,11 +91,11 @@ app.use(logger(function(tokens, req, res) {
 	var today = new Date();
 	const timestamp = '[' + (today.getMonth()+1) + '/' + today.getDate() + '/' + today.getFullYear().toString().slice(2,4) + ' ' + today.getHours() + ':' + today.getMinutes() + ':' + today.getSeconds() + ']';
 
-	var output = `${timestamp} ${tokens['remote-addr'](req,res)} ${email}: ${tokens.method(req,res)} ${tokens.url(req,res)} ${tokens.status(req,res)} ${tokens['response-time'](req,res)}ms`;
+	var output = `${timestamp} ${tokens['remote-addr'](req,res)} ${email}: ${tokens.method(req,res)} ${tokens.url(req,res)} ${tokens.status(req,res)} - ${tokens['response-time'](req,res)}ms`;
 
-	const body = tokens['request-body'](req,res);
-	const params = tokens['request-params'](req,res);
-	const query = tokens['request-query'](req,res);
+	const body = tokens['request-body'](req,res) || {};
+	const params = tokens['request-params'](req,res) || {};
+	const query = tokens['request-query'](req,res) || {};
 
 	// Body if exists
 	if(Object.keys(body).length != 0) output = output.concat('\nbody: ' + JSON.stringify(body, null, '\t'));
@@ -164,6 +170,18 @@ app.get('/', isLoggedIn, function(req, res) {
 
 module.exports = app;
 
-app.listen(app.get('port'), app.get('ip'), function() {
-	console.log(`Example app listening on port ${app.get('ip')}:${app.get('port')}`);
-});
+// app.listen(app.get('port'), app.get('ip'), function() {
+// 	console.log(`Example app listening on port ${app.get('ip')}:${app.get('port')}`);
+// });
+
+https
+	.createServer(
+		{
+		key: fs.readFileSync("server.key"),
+		cert: fs.readFileSync("server.cert"),
+		},
+		app
+	).
+	listen(app.get('port'), app.get('ip'), function () {
+		console.log(`Example app listening on port ${app.get('ip')}:${app.get('port')}`);
+	});
