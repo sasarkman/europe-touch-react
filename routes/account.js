@@ -52,7 +52,7 @@ router.route('/').
 			auth.isLoggedIn
 		],
 		function(req, res) {
-			var user = req.session.user.email;
+			var user = req.session.user.name;
 			var isAdmin = req.session.user.admin;
 			var HTML = "";
 
@@ -68,7 +68,7 @@ router.route('/').
 					<a href="/appointment/schedule">Schedule appointment</a>
 				`;
 			}
-			res.render('account-index', { temp: HTML });
+			res.render('account-index', { username: user, temp: HTML });
 		}
 	).
 	post(

@@ -23,7 +23,9 @@
 		.xdsoft_datetimepicker .xdsoft_datepicker.active+.xdsoft_timepicker {
 			width: 17%
 		}
-
+		.xdsoft_datetimepicker .xdsoft_label {
+			z-index: 1
+		}
 	</style>
 	
 	<head>
@@ -82,10 +84,62 @@
 						</label>
 					</div>
 
+					<div class="form-check">
+						<input class="form-check-input" type="checkbox" name="check3">
+						<label class="form-check-label" for="flexCheckDefault">
+							I agree to the <a class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#policyModal">cancellation/late policy</a>
+						</label>
+					</div>
+
 					<button type="button" class="btn btn-primary" id="schedule_button">Schedule</button>
 				</div>
 			</form>
 		</div>
+
+		<!-- Modal -->
+		<div class="modal fade" id="policyModal" tabindex="-1" role="dialog" aria-labelledby="policyModalLabel" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="policyModalLabel">Cancellation/Late Policy</h5>
+				</div>
+				<div class="modal-body">
+					<div class="paragraph" style="text-align:left;display:block;">We understand that unanticipated events happen
+						occasionally in everyone’s life. In our desire to be effective and fair to all of our clients and out of
+						consideration for therapists’ time, we have adopted the following policies:
+						<ul>
+							<li>
+								<strong>24 hour advance notice is required </strong><strong>when canceling an appointment. This allows the
+								opportunity for someone else to schedule an appointment.</strong>
+							</li>
+							<li>
+								If you are unable to give your therapist a reasonable time of advance notice you
+								<strong>may be charged 50% </strong>for your missed appointment.
+							</li>
+							<li><strong>No-shows</strong> Anyone who either forgets or consciously chooses to forgo their appointment with
+								no contact, will be considered a “no-show”. They will be <strong>charged the full amount for their
+									“missed” appointment </strong>and future service will be denied until payment is made.</li>
+							<li><strong>Arriving late </strong>Appointment times have been arranged specifically for you. If you arrive
+								late your session may be shortened in order to accommodate others whose appointments follow yours. Depending
+								upon how late you arrive, your therapist will then determine if there is enough time remaining to start a
+								treatment. Regardless of the length of the treatment actually given, you will be responsible for
+								the “full” session, however we will do our best to satisfy the scheduled
+								time.
+							</li>
+						</ul>
+						
+						<div>
+							Out of respect and consideration to your therapist and other customers, please plan your visit accordingly. <strong>Please arrive early!</strong>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+			</div>
+		</div>
+
 		<< partials/footer >>
 	</body>
 </html>

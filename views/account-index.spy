@@ -10,6 +10,7 @@
 		<< partials/header >>
 
 		<div class="container d-flex flex-column h-100">
+			<h5>{{ username }}'s Dashboard</h5>
 			{{ temp }}
 		</div>
 

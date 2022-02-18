@@ -10,6 +10,9 @@ $(function() {
 			},
 			check2: {
 				required: true
+			},
+			check3: {
+				required: true
 			}
 		},
 		messages: {

@@ -3,3 +3,4 @@ sessions/
 .env
 server.cert
 server.key
+todo-responsiveLoginPage.spy.html
