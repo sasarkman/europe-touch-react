@@ -36,10 +36,9 @@ app.use(session({
 	resave: false,
 	cookie: {
 		expires: new Date(Date.now() + (1000 * 60 * 60 * 5)), // 5 hours
-		secure: true // https only
+		// secure: true // https only
 	},
 	store: new session_store()
-	// store: store
 }));
 
 // Initialize and load router middleware
@@ -54,6 +53,17 @@ const appointmentRouter = require('./routes/appointment');
 // Load logging module
 const logger = require('morgan');
 
+// For log files
+const rfs = require('rotating-file-stream');
+const accessLogStream = rfs.createStream('access.log', {
+	interval: '1d',
+	path: path.join(__dirname, 'logs')
+})
+const errorLogStream = rfs.createStream('error.log', {
+	interval: '1d',
+	path: path.join(__dirname, 'logs')
+})
+
 // Load object relational model module
 const mongoose = require('mongoose');
 
@@ -62,7 +72,6 @@ const sprightly = require('sprightly');
 
 // Load authorization module
 // const auth = require('jsonwebtoken');
-// const auth_key = "3urop3t0uch";
 const isLoggedIn = require('./auth').isLoggedIn;
 
 // Load user input validator
@@ -78,12 +87,12 @@ logger.token('request-params', (req, res) => {return req.params});
 logger.token('request-query', (req, res) => {return req.query});
 
 // Initialize logging settings
-app.use(logger(function(tokens, req, res) {
+var loggingSettings = function(tokens, req, res) {
 	// Log email if known
 	var email = '';
 	if(req.session) {
 		if(req.session.user) {
-		email = '(' + req.session.user.email + ')';
+		email = `(${req.session.user.name}: ${req.session.user.email})`;
 		}
 	}
 
@@ -103,10 +112,31 @@ app.use(logger(function(tokens, req, res) {
 	// Query if exists
 	if(Object.keys(params).length != 0) output = output.concat('\nparams: ' + JSON.stringify(params, null, '\t'));
 
-	// // Params if exists
+	// Params if exists
 	if(Object.keys(query).length != 0) output = output.concat('\nquery: ' + JSON.stringify(query, null, '\t'));
 
 	return output;
+};
+
+// Skip requests that aren't for the homepage
+const skipSuccess = (req, res) => res.statusCode < 400;
+const skipError = (req, res) => res.statusCode >= 400;
+
+// Console logging
+app.use(logger(loggingSettings, { 
+	stream: process.stdout,
+}));
+
+// Access logging
+app.use(logger(loggingSettings, { 
+	stream: accessLogStream,
+	skip: skipError
+}));
+
+// Error logging
+app.use(logger(loggingSettings, { 
+	stream: errorLogStream,
+	skip: skipSuccess
 }));
 
 // Initialize routes
@@ -170,18 +200,18 @@ app.get('/', isLoggedIn, function(req, res) {
 
 module.exports = app;
 
-// app.listen(app.get('port'), app.get('ip'), function() {
-// 	console.log(`Example app listening on port ${app.get('ip')}:${app.get('port')}`);
-// });
+app.listen(app.get('port'), app.get('ip'), function() {
+	console.log(`Example app listening on port ${app.get('ip')}:${app.get('port')}`);
+});
 
-https
-	.createServer(
-		{
-		key: fs.readFileSync("server.key"),
-		cert: fs.readFileSync("server.cert"),
-		},
-		app
-	).
-	listen(app.get('port'), app.get('ip'), function () {
-		console.log(`Example app listening on port ${app.get('ip')}:${app.get('port')}`);
-	});
+// https
+// 	.createServer(
+// 		{
+// 		key: fs.readFileSync("server.key"),
+// 		cert: fs.readFileSync("server.cert"),
+// 		},
+// 		app
+// 	).
+// 	listen(app.get('port'), app.get('ip'), function () {
+// 		console.log(`Example app listening on port ${app.get('ip')}:${app.get('port')}`);
+// 	});
