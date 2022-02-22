@@ -7,7 +7,6 @@ const https = require('https');
 
 // Initialize express
 const app = express();
-//app.use(express.urlencoded({extended:true}));
 
 // Helmet HTTP security module
 const helmet = require('helmet');
@@ -212,10 +211,6 @@ app.use('/intl-tel-input.css', express.static(path.join(__dirname, 'node_modules
 app.use('/datetimepicker.js', express.static(path.join(__dirname, 'node_modules/jquery-datetimepicker/build/jquery.datetimepicker.full.min.js')));
 app.use('/datetimepicker.css', express.static(path.join(__dirname, 'node_modules/jquery-datetimepicker/build/jquery.datetimepicker.min.css')));
 
-// Expose pages
-// app.use('/viewAppointments', express.static(path.join(__dirname, 'views/appointment-viewAll.spy')));
-// app.use('/manageServices', express.static(path.join(__dirname, 'views/service-manage.spy')));
-
 // Mongodb connection string
 const mongo_url = process.env.MONGODB_URL;
 
@@ -233,7 +228,7 @@ mongoose.connect(mongo_url, { useNewUrlParser:true, useUnifiedTopology:true }, (
 });
 
 app.use(function(req, res, next) {
-	res.status(404).send('Not found');
+	res.status(404).redirect('/account');
 });
 
 app.listen(app.get('port'), app.get('ip'), function() {
