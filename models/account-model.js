@@ -66,31 +66,7 @@ AccountSchema.pre('save', function(next) {
 	})
 });
 
-AccountSchema.post('save', function(account, next) {
-	console.log(`http://localhost:3000/account/confirm/${this._id}`);
 
-	// TODO: create confirmation token instead of using account _id
-
-	const mailOptions = {
-		from: process.env.EMAIL_FROM,
-		to: account.email,
-		subject: 'Account confirmation',
-		text: `
-			Hello ${account.name},
-			Please follow this link to activate your account: http://localhost:3000/account/confirm/${account._id}
-		`
-	};
-
-	emailer.sendMail(mailOptions, function (error, info) {
-		if (error) {
-			console.log(error);
-		} else {
-			console.log(`Email sent to ${account.email}: ${info.response}`);
-		}
-	});
-
-	next();
-})
 
 AccountSchema.methods.comparePassword = function(candidatePassword, callback) {
 	bcrypt.compare(candidatePassword, this.password, function(err, isMatch) {

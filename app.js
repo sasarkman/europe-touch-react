@@ -9,6 +9,24 @@ const https = require('https');
 const app = express();
 //app.use(express.urlencoded({extended:true}));
 
+// Helmet HTTP security module
+const helmet = require('helmet');
+// app.use(helmet.contentSecurityPolicy());
+app.use(helmet.crossOriginEmbedderPolicy());
+app.use(helmet.crossOriginOpenerPolicy());
+app.use(helmet.crossOriginResourcePolicy());
+app.use(helmet.dnsPrefetchControl());
+app.use(helmet.expectCt());
+app.use(helmet.frameguard());
+app.use(helmet.hidePoweredBy());
+app.use(helmet.hsts());
+app.use(helmet.ieNoOpen());
+app.use(helmet.noSniff());
+app.use(helmet.originAgentCluster());
+app.use(helmet.permittedCrossDomainPolicies());
+app.use(helmet.referrerPolicy());
+app.use(helmet.xssFilter());
+
 app.use(bodyParser.urlencoded({
 	extended: true
  }));
@@ -55,14 +73,6 @@ const logger = require('morgan');
 
 // For log files
 const rfs = require('rotating-file-stream');
-const accessLogStream = rfs.createStream('access.log', {
-	interval: '1d',
-	path: path.join(__dirname, 'logs')
-})
-const errorLogStream = rfs.createStream('error.log', {
-	interval: '1d',
-	path: path.join(__dirname, 'logs')
-})
 
 // Load object relational model module
 const mongoose = require('mongoose');
@@ -86,13 +96,13 @@ logger.token('request-body', (req, res) => {return req.body});
 logger.token('request-params', (req, res) => {return req.params});
 logger.token('request-query', (req, res) => {return req.query});
 
-// Initialize logging settings
+// Morgan logging settings
 var loggingSettings = function(tokens, req, res) {
 	// Log email if known
 	var email = '';
 	if(req.session) {
 		if(req.session.user) {
-		email = `(${req.session.user.name}: ${req.session.user.email})`;
+			email = `(${req.session.user.name}: ${req.session.user.email})`;
 		}
 	}
 
@@ -118,26 +128,54 @@ var loggingSettings = function(tokens, req, res) {
 	return output;
 };
 
-// Skip requests that aren't for the homepage
-const skipSuccess = (req, res) => res.statusCode < 400;
-const skipError = (req, res) => res.statusCode >= 400;
+// Rotating file stream settings
+const pad = num => (num > 9 ? "" : "0") + num;
+var time = new Date();
+var year = time.getFullYear();
+var month = pad(time.getMonth() + 1);
+var day = pad(time.getDate());
+const logTimestamp = `${month}-${day}-${year}`;
+
+// Log streams
+const allLogStream = rfs.createStream(`${logTimestamp}-all.log`, {
+	interval: '1d',
+	compress: 'gzip',
+	path: path.join(__dirname, 'logs')
+})
+const accessLogStream = rfs.createStream(`${logTimestamp}-access.log`, {
+	interval: '1d',
+	compress: 'gzip',
+	path: path.join(__dirname, 'logs')
+})
+const errorLogStream = rfs.createStream(`${logTimestamp}-error.log`, {
+	interval: '1d',
+	compress: 'gzip',
+	path: path.join(__dirname, 'logs')
+})
 
 // Console logging
 app.use(logger(loggingSettings, { 
 	stream: process.stdout,
 }));
 
+// Log dump
+app.use(logger(loggingSettings, { 
+	stream: allLogStream,
+}));
+
 // Access logging
 app.use(logger(loggingSettings, { 
 	stream: accessLogStream,
-	skip: skipError
+	skip: (req, res) => res.statusCode >= 400
 }));
 
 // Error logging
 app.use(logger(loggingSettings, { 
 	stream: errorLogStream,
-	skip: skipSuccess
+	skip: (req, res) => res.statusCode < 400
 }));
+
+// TODO: create log that just logs system errors
 
 // Initialize routes
 app.use('/account', accountRouter);
@@ -194,11 +232,9 @@ mongoose.connect(mongo_url, { useNewUrlParser:true, useUnifiedTopology:true }, (
 	console.log("Connected to database: " + mongo_url);
 });
 
-app.get('/', isLoggedIn, function(req, res) {
-	return res.redirect('/account');
+app.use(function(req, res, next) {
+	res.status(404).send('Not found');
 });
-
-module.exports = app;
 
 app.listen(app.get('port'), app.get('ip'), function() {
 	console.log(`Example app listening on port ${app.get('ip')}:${app.get('port')}`);

@@ -104,7 +104,7 @@ $(function () {
 						break;
 					default:
 						alertShow(statusText, 'alert-danger');
-						hideSpinner('#create_button', 'Create service');
+						hideSpinner('#create_button', 'Create account');
 						break
 				}
 		})

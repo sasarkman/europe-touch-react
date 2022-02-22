@@ -4,6 +4,7 @@
   "description": "The code for the Europe Touch web application.",
   "main": "app.js",
   "scripts": {
+    "start": "nodemon app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -23,6 +24,7 @@
     "express-session": "^1.17.2",
     "express-validator": "^6.13.0",
     "fullcalendar": "^5.10.1",
+    "helmet": "^5.0.2",
     "intl-tel-input": "^17.0.15",
     "jquery": "^3.6.0",
     "jquery-datetimepicker": "^2.5.21",

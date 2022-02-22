@@ -99,7 +99,25 @@ router.route('/').
 						return res.status(400).json({ msg: 'Bad request.'});
 					}
 				} else {
-					return res.status(200).json({ msg: `Account created! Please confirm your account by following the link sent to: ${req.body.email}.`});
+					const mailOptions = {
+						from: process.env.EMAIL_FROM,
+						to: result.email,
+						subject: 'Account confirmation',
+						text: `
+							Hello ${result.name},
+							Please follow this link to activate your account: http://${req.headers.host}/account/confirm/${result._id}
+						`
+					};
+				
+					emailer.sendMail(mailOptions, function (error, info) {
+						if (error) {
+							console.log(error);
+						} else {
+							console.log(`Email sent to ${result.email}: ${info.response}`);
+						}
+					});
+
+					return res.status(200).json({ msg: `Account created! Please confirm your account by following the link sent to: ${result.email}.`});
 				}
 			});
 		}
@@ -313,7 +331,7 @@ router.route('/forgotPassword').
 								subject: 'Password reset request',
 								text: `
 									Hello,
-									Please follow this link to reset your password: http://${process.env.PUB_IP}:3000/account/resetPassword/${token}
+									Please follow this link to reset your password: http://${req.headers.host}/account/resetPassword/${token}
 								`
 							};
 						
