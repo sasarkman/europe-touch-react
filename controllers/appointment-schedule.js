@@ -34,9 +34,9 @@ $(function() {
 		formatTime: 'h:i A', // hour: minute AM/PM
 		minDate:'0',// 0 = today
 		minTime:'9:00', // 9AM
-		maxTime:'17:00', // 5PM
+		maxTime:'15:00', // 3PM
 		defaultTime: '09:00',
-		disabledWeekDays: [0], // disable sundays
+		disabledWeekDays: [0, 4, 5, 6],
 		step: 30
 	});
 
