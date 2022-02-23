@@ -239,8 +239,8 @@ app.use(function(req, res, next) {
 https
 	.createServer(
 		{
-		key: fs.readFileSync("server.key"),
-		cert: fs.readFileSync("server.cert"),
+		key: fs.readFileSync(process.env.KEY),
+		cert: fs.readFileSync(process.env.CERT),
 		},
 		app
 	).
