@@ -53,7 +53,7 @@ app.use(session({
 	resave: false,
 	cookie: {
 		expires: new Date(Date.now() + (1000 * 60 * 60 * 5)), // 5 hours
-		secure: true // https only
+		// secure: true // https only
 	},
 	store: new session_store()
 }));
@@ -231,18 +231,18 @@ app.use(function(req, res, next) {
 	res.status(404).redirect('/account');
 });
 
-// app.listen(app.get('port'), app.get('ip'), function() {
-// 	console.log(`Example app listening on port ${app.get('ip')}:${app.get('port')}`);
-// });
+app.listen(app.get('port'), app.get('ip'), function() {
+	console.log(`Example app listening on port ${app.get('ip')}:${app.get('port')}`);
+});
 
-https
-	.createServer(
-		{
-		key: fs.readFileSync("server.key"),
-		cert: fs.readFileSync("server.cert"),
-		},
-		app
-	).
-	listen(app.get('port'), app.get('ip'), function () {
-		console.log(`Example app listening on port ${app.get('ip')}:${app.get('port')}`);
-	});
+// https
+// 	.createServer(
+// 		{
+// 		key: fs.readFileSync("server.key"),
+// 		cert: fs.readFileSync("server.cert"),
+// 		},
+// 		app
+// 	).
+// 	listen(app.get('port'), app.get('ip'), function () {
+// 		console.log(`Example app listening on port ${app.get('ip')}:${app.get('port')}`);
+// 	});
