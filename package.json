@@ -43,5 +43,9 @@
   },
   "devDependencies": {
     "nodemon": "^2.0.15"
+  },
+  "nodemonConfig": {
+    "ignore": ["sessions/*", "logs/*"],
+    "delay": 2500
   }
 }

@@ -129,6 +129,8 @@ router.route('/').
 			fifteenDays = new Date( today.valueOf() - ( 15 * oneDay ) ),
 			sevenDays = new Date( today.valueOf() + ( 7 * oneDay ) );
 
+
+
 			// TODO: Need more work here
 			// query.datetime = {
 			// 	"$gte": oneDayBehind,

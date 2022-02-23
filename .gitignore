@@ -2,7 +2,6 @@ node_modules/
 sessions/
 logs/
 .env
-server.cert
-server.key
 todo-responsiveLoginPage.spy.html
-europetouch.pem
+privkey.key
+fullchain.pem
