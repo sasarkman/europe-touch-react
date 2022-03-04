@@ -117,7 +117,7 @@ router.route('/').
 						}
 					});
 
-					return res.status(200).json({ msg: `Account created! Please confirm your account by following the link sent to: ${result.email}.`});
+					return res.status(200).json({ msg: `Account created! Please confirm your account by following the link sent to: ${result.email}. <b>You may need to check your spam folder.<b>`});
 				}
 			});
 		}
@@ -157,7 +157,7 @@ router.route('/login').
 						if(isMatch) {
 							// Is account confirmed?
 							if(!record.confirmed) {
-								return res.status(400).json({ msg: 'Please confirm your account by following the e-mail sent to your inbox. (check your spam filter!)'});
+								return res.status(400).json({ msg: 'Please confirm your account by following the e-mail sent to your inbox. <b>You may need to check your spam folder.<b>'});
 							}
 
 							// todo: trim down to just storing _id
