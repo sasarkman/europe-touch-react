@@ -105,7 +105,7 @@ router.route('/').
 						subject: 'Account confirmation',
 						text: `
 							Hello ${result.name},
-							Please follow this link to activate your account: http://${req.headers.host}/account/confirm/${result._id}
+							Please follow this link to activate your account: ${req.protocol}://${req.headers.host}/account/confirm/${result._id}
 						`
 					};
 				
@@ -157,7 +157,7 @@ router.route('/login').
 						if(isMatch) {
 							// Is account confirmed?
 							if(!record.confirmed) {
-								return res.status(400).json({ msg: 'Please confirm your account by following the e-mail sent to your inbox'});
+								return res.status(400).json({ msg: 'Please confirm your account by following the e-mail sent to your inbox. (check your spam filter!)'});
 							}
 
 							// todo: trim down to just storing _id
@@ -210,7 +210,7 @@ router.route('/confirm/:token?').
 			console.log(url);
 
 			var responseCode = '';
-			fetch(`http://${url}/account/confirm/${token}`, { method: 'POST'}).then(response => {
+			fetch(`${req.protocol}://${url}/account/confirm/${token}`, { method: 'POST'}).then(response => {
 				responseCode = response.status;
 				return response;
 			}).then(response => response.json()
@@ -335,7 +335,7 @@ router.route('/forgotPassword').
 								subject: 'Password reset request',
 								text: `
 									Hello,
-									Please follow this link to reset your password: ${req.protocol}://${req.headers.host}/account/resetPassword/${token}. (check your spam filter!)
+									Please follow this link to reset your password: ${req.protocol}://${req.headers.host}/account/resetPassword/${token}.
 								`
 							};
 						
