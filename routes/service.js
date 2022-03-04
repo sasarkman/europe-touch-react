@@ -46,7 +46,8 @@ router.route('/').
 	post(
 		[
 			auth.isAdmin,
-			check(['name', 'duration', 'price', 'description']).notEmpty().isString(),
+			check(['name', 'duration', 'price']).notEmpty().isString(),
+			check('description').optional().isString()
 		], function(req, res) {
 			const errors = validationResult(req);
 			if(!errors.isEmpty()) {

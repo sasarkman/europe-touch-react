@@ -1,7 +1,7 @@
 node_modules/
-sessions/
 logs/
 .env
 todo-responsiveLoginPage.spy.html
 privkey.key
 fullchain.pem
+europetouch.pem

@@ -41,7 +41,7 @@
 
 				<div class='form-group mb-1'>
 					<label for="description">Description:</label>
-					<input class='form-control' id="description" name="description">
+					<textarea class='form-control' id="description" name="description"></textarea>
 				</div>
 
 				<button type="button" class="btn btn-primary" id="create_button">

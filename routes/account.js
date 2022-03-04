@@ -160,8 +160,12 @@ router.route('/login').
 								return res.status(400).json({ msg: 'Please confirm your account by following the e-mail sent to your inbox'});
 							}
 
-							//cookie
-							req.session.user = record;
+							// todo: trim down to just storing _id
+							req.session.user = {};
+							req.session.user['_id'] = record._id;
+							req.session.user['email'] = record.email;
+							req.session.user['name'] = record.name;
+							req.session.user['admin'] = record.admin;
 
 							return res.status(200).json({ msg: 'Logged in!'});
 						} else {
@@ -450,6 +454,48 @@ router.route('/resetPassword/:token').
 					return res.status(400).json({ msg: 'Error.' });
 				}
 			})
+		}
+	)
+;
+
+router.route('/availability').
+	get(
+		[
+			auth.isLoggedIn
+		],
+		function(req, res) {
+			const id = req.session.user._id;
+			
+			AccountModel.findById(id, {_id:false, availableDates: true}).exec(function(err, result) {
+				if(err || !result) return res.status(400).json({ msg: `Failed to retrieve availability.`});
+				else return res.status(200).json({ msg: 'Successfully retrieved availability!', data: result});
+			});
+		}
+	).
+	post(
+		[
+			auth.isAdmin,
+			check('dates').exists(),
+		], function(req, res) {
+			const errors = validationResult(req);
+			if(!errors.isEmpty()) {
+				return res.status(422).json({ msg: 'Invalid input' });
+			}
+
+			const id = req.session.user._id;
+
+			AccountModel.findById(id, 'availableDates').exec(function(err, result) {
+				if(err || !result) return res.status(400).json({ msg: `Failed to retrieve availability for this account.`});
+				else {
+					const dates = req.body.dates;
+					result.availableDates = dates;
+
+					result.save(function(err, result) {
+						if(err) return res.status(400).json({ msg: `Failed to update availability for this account.`});
+						else res.status(200).json({ msg: 'Availability successfully updated!'});
+					});
+				}
+			});
 		}
 	)
 ;

@@ -8,6 +8,9 @@ const https = require('https');
 // Initialize express
 const app = express();
 
+// Cookie module
+const session = require('express-session');
+
 // Helmet HTTP security module
 const helmet = require('helmet');
 // app.use(helmet.contentSecurityPolicy());
@@ -40,23 +43,8 @@ const path = require('path');
 // File system module
 const fs = require('fs');
 
-// Cookie module
-const session = require('express-session');
-
-// Filestore for cookies
-const session_store = require('session-file-store')(session);
-
-app.use(session({
-	name:'session_id',
-	secret: process.env.SESSION_SECRET,
-	saveUninitialized: false,
-	resave: false,
-	cookie: {
-		expires: new Date(Date.now() + (1000 * 60 * 60 * 5)), // 5 hours
-		secure: true // https only
-	},
-	store: new session_store()
-}));
+// Mongodb connection string
+const mongo_url = process.env.MONGODB_URL;
 
 // Initialize and load router middleware
 const router = express.Router();
@@ -86,8 +74,34 @@ const isLoggedIn = require('./auth').isLoggedIn;
 // Load user input validator
 const { check, validationResult } = require('express-validator');
 
-// Load password hashing module
-const bcrypt = require('bcrypt');
+mongoose.connect(mongo_url, { useNewUrlParser:true, useUnifiedTopology:true }, (err) => {
+	if (err) {
+		console.log(err);
+		console.log("Could not connect to database, exiting...");
+		process.exit(0);
+	}
+	console.log("Connected to database: " + mongo_url);
+});
+
+// Filestore for cookies
+const MongoDBStore = require('connect-mongodb-session')(session);
+const store = new MongoDBStore({
+  uri: mongo_url,
+  collection: 'sessions'
+});
+
+app.use(session({
+	name:'session_id',
+	secret: process.env.SESSION_SECRET,
+	saveUninitialized: false,
+	resave: false,
+	cookie: {
+		maxAge: 1000 * 60 * 60 * 5,
+		httpOnly: true,
+		secure: true // https only
+	},
+	store: store
+}));
 
 // Define custom logging tokens
 logger.token('timestamp', function(req, res) { return timestamp });
@@ -153,9 +167,9 @@ const errorLogStream = rfs.createStream(`${logTimestamp}-error.log`, {
 })
 
 // Console logging
-app.use(logger(loggingSettings, { 
-	stream: process.stdout,
-}));
+// app.use(logger(loggingSettings, { 
+// 	stream: process.stdout,
+// }));
 
 // Log dump
 app.use(logger(loggingSettings, { 
@@ -211,21 +225,9 @@ app.use('/intl-tel-input.css', express.static(path.join(__dirname, 'node_modules
 app.use('/datetimepicker.js', express.static(path.join(__dirname, 'node_modules/jquery-datetimepicker/build/jquery.datetimepicker.full.min.js')));
 app.use('/datetimepicker.css', express.static(path.join(__dirname, 'node_modules/jquery-datetimepicker/build/jquery.datetimepicker.min.css')));
 
-// Mongodb connection string
-const mongo_url = process.env.MONGODB_URL;
-
 // Express IP and port info
 app.set('port', process.env.PORT);
 app.set('ip', process.env.IP);
-
-mongoose.connect(mongo_url, { useNewUrlParser:true, useUnifiedTopology:true }, (err) => {
-	if (err) {
-		console.log(err);
-		console.log("Could not connect to database, exiting...");
-		process.exit(0);
-	}
-	console.log("Connected to database: " + mongo_url);
-});
 
 app.use(function(req, res, next) {
 	res.status(404).redirect('/account');

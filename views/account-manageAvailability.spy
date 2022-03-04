@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+	<script type="text/javascript" src="/jquery.js"></script>
+	<script type="text/javascript" src="/jquery-validation.js"></script>
+	<script type="text/javascript" src="/bootstrap.js"></script>
+	<script type="text/javascript" src="/datetimepicker.js"></script>
+
+	<script type="text/javascript" src="/scripts/api.js"></script>
+	<script type="text/javascript" src="/scripts/utilities.js"></script>
+
+	<script type="text/javascript" src="/controllers/account-manageAvailability.js"></script>
+
+	<link rel="stylesheet" type="text/css" href="/bootstrap.css">
+	<link rel="stylesheet" type="text/css" href="/datetimepicker.css">
+	
+	<style>
+		.xdsoft_datetimepicker {
+			width:100%
+		}
+		.xdsoft_datepicker.active {
+			width: 80%
+		}
+		.xdsoft_datetimepicker .xdsoft_datepicker.active+.xdsoft_timepicker {
+			width: 17%
+		}
+		.xdsoft_datetimepicker .xdsoft_label {
+			z-index: 1
+		}
+	</style>
+	
+	<head>
+		<title>Manage availability</title>
+	</head>
+	<body class='d-flex flex-column min-vh-100'>
+		<< partials/header >>
+		<div class='mt-auto d-flex flex-column justify-content-center align-items-center'>
+			<h1>Manage availability</h1>
+			<div class="alert d-none" role="alert" id="alert"></div>
+			<form method="post" id="main-form">
+					<div class='form-group mb-1'>
+						<label for="date">Date:</label><br>
+						<input type="text" class='form-control' name="datetime" id="datetime">
+					</div>
+
+					<button type="button" class="btn btn-primary" id="save_button">Save</button>
+				</div>
+			</form>
+		</div>
+
+		<< partials/footer >>
+	</body>
+</html>

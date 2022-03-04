@@ -10,15 +10,11 @@ $(function () {
 			price: {
 				required: true
 			},
-			description: {
-				required: true
-			}
 		},
 		messages: {
 			name: 'Please enter a name for this service',
 			duration: 'Please enter a duration',
 			price: 'Please enter a price',
-			description: 'Please enter a description for this service'
 		},
 		errorElement: 'div',
 		errorPlacement: function ( error, element ) {

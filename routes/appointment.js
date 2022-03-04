@@ -122,19 +122,10 @@ router.route('/').
 					break;
 			}
 
-			var today = new Date(),
-			oneDay = ( 1000 * 60 * 60 * 24 ),
-			oneDayBehind = new Date( today.valueOf() - ( oneDay ) ),
-			thirtyDays = new Date( today.valueOf() - ( 30 * oneDay ) ),
-			fifteenDays = new Date( today.valueOf() - ( 15 * oneDay ) ),
-			sevenDays = new Date( today.valueOf() + ( 7 * oneDay ) );
-
-
-
-			// TODO: Need more work here
-			// query.datetime = {
-			// 	"$gte": oneDayBehind,
-			// }
+			// Handle custom date ranges
+			query.datetime = {};
+			if(typeof req.query.start !== 'undefined') query.datetime['$gte'] = new Date(req.query.start);
+			if(typeof req.query.end !== 'undefined') query.datetime['$lte'] = new Date(req.query.end);
 
 			AppointmentModel.aggregate([
 				{
