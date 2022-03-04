@@ -135,7 +135,6 @@ $(function() {
 		var statusCode = '';
 		var statusText = '';
 		new API().request('/service/', settings)
-			// new Service().editService(settings)
 			.then( response => {
 				statusCode = response.status;
 				statusText = response.msg;
@@ -175,8 +174,6 @@ $(function() {
 				},
 				body: JSON.stringify({
 					id: servicesSelector.val(),
-					// not ideal
-					name: serviceNameField.val(),
 				})
 			}
 	
@@ -194,7 +191,7 @@ $(function() {
 						option.remove();
 
 						$('#services').trigger('change');
-						alertShow(alertText, 'alert-success');
+						alertShow('Service deleted', 'alert-success');
 			
 						enableButton($(this));
 						$(this).text('Delete');

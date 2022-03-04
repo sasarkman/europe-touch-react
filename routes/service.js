@@ -114,7 +114,6 @@ router.route('/').
 			check('id').custom(value => {
 				return ObjectId.isValid(value);
 			}),
-			check('name').notEmpty(),
 		],
 		function(req, res) {
 			const errors = validationResult(req);
@@ -123,14 +122,13 @@ router.route('/').
 			}
 
 			const id = new mongoose.Types.ObjectId(req.body.id);
-			const name = req.body.name;
 			const query = {
 				_id: id,
 			}
 
 			ServiceModel.findByIdAndRemove(query, function(err, result) {
 				if(err || !result) return res.status(400).json({ msg: `Failed to delete service.`});
-				else return res.status(200).json({ msg: `Service deleted: ${name}`});
+				else return res.status(200).json({ msg: `Service deleted: ${result.name}`});
 			});
 		}
 	)
