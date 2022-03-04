@@ -46,6 +46,9 @@ var AccountSchema = new mongoose.Schema({
 	confirmed: {
 		type: Boolean,
 		default: false
+	},
+	availableDates: {
+		type: [String],
 	}
 });
 

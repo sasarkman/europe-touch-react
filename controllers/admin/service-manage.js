@@ -1,4 +1,10 @@
 $(function() {
+	const serviceNameField = $('#name');
+	const durationField = $('#duration');
+	const priceField = $('#price');
+	const descriptionField = $('#description');
+	const servicesSelector = $('#services');
+
 	// form validation
 	var validator = $('#main-form').validate({
 		rules: {
@@ -30,12 +36,6 @@ $(function() {
 			}
 		}
 	})
-	
-	const serviceNameField = $('#name');
-	const durationField = $('#duration');
-	const priceField = $('#price');
-	const descriptionField = $('#description');
-	const servicesSelector = $('#services');
 
 	servicesSelector.on('change', (e) => {
 		alertReset();
@@ -78,36 +78,6 @@ $(function() {
 			}
 		});
 	})
-
-	const settings = { 
-		method: 'GET',
-		headers: {
-			'Accept': 'application/json',
-			'Content-Type': 'application/json',
-		},
-	}
-
-	var statusCode = '';
-	var statusText = '';
-	new API().request('/service/', settings).then((response) => {
-		statusCode = response.status;
-		statusText = response.msg;
-
-		switch(statusCode) {
-			case 200:
-				response.data.forEach(service => {
-					const option = document.createElement('option');
-					option.value = service._id;
-					option.innerHTML = service.name;
-					servicesSelector.append(option);
-				});
-				servicesSelector.trigger('change');
-				$('.collapse').collapse('show');
-				break
-			default:
-				break;
-		}
-	});
 
 	$('#save-button').on('click', function() {
 		// exit if input isn't valid
@@ -208,5 +178,35 @@ $(function() {
 		}).catch(function (err) {
 			console.log(err)
 		});		
-	})
+	});
+
+	const settings = { 
+		method: 'GET',
+		headers: {
+			'Accept': 'application/json',
+			'Content-Type': 'application/json',
+		},
+	}
+
+	var statusCode = '';
+	var statusText = '';
+	new API().request('/service/', settings).then((response) => {
+		statusCode = response.status;
+		statusText = response.msg;
+
+		switch(statusCode) {
+			case 200:
+				response.data.forEach(service => {
+					const option = document.createElement('option');
+					option.value = service._id;
+					option.innerHTML = service.name;
+					servicesSelector.append(option);
+				});
+				servicesSelector.trigger('change');
+				$('.collapse').collapse('show');
+				break
+			default:
+				break;
+		}
+	});
 });

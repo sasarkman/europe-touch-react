@@ -1,4 +1,9 @@
 $(function() {
+	const durationField = $('#duration');
+	const priceField = $('#price');
+	const descriptionField = $('#description');
+	const servicesSelector = $('#services');
+
 	var validator = $('#main-form').validate({
 		rules: {
 			datetime: {
@@ -27,7 +32,6 @@ $(function() {
 		}
 	});
 
-
 	$("#datetime").datetimepicker({
 		inline:true,
 		format:'Y-m-d',
@@ -39,11 +43,6 @@ $(function() {
 		disabledWeekDays: [0, 4, 5, 6],
 		step: 30
 	});
-
-	const durationField = $('#duration');
-	const priceField = $('#price');
-	const descriptionField = $('#description');
-	const servicesSelector = $('#services');
 
 	$('#services').on('change', (e) => {
 		alertReset();
@@ -86,6 +85,53 @@ $(function() {
 		});
 	})
 
+	$('#schedule_button').on('click', function() {
+		// reset alert if need be
+		alertReset();
+
+		// exit if input isn't valid
+		if(!validator.form()) return;
+
+		// show spinner
+		showSpinner('#create_button', 'Creating...');
+
+		var service = $('#services').val();
+		var dateTime = $('#datetime').datetimepicker('getValue');
+		var isoDateTime = new Date(dateTime).toISOString();
+
+		const settings = {
+			method: 'POST',
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+				'service': service,
+				'datetime': isoDateTime,
+			})
+		}
+
+		var statusCode = '';
+		var statusText = '';
+		new API().request('/appointment/', settings).
+			then(response => {
+				statusCode = response.status;
+				statusText = response.msg;
+
+				switch(statusCode) {
+					case 200:
+						statusText = `${statusText} View <a href="/appointment/viewall">appointments</a>.`;
+						$('#main-form').hide();
+						alertShow(statusText, 'alert-success');
+						break;
+					default:
+						alertShow(statusText, 'alert-danger');
+						hideSpinner('#schedule_button', 'Schedule');
+						break
+				}
+			})
+	})
+
 	const settings = {
 		method: 'GET',
 		headers: {
@@ -115,51 +161,4 @@ $(function() {
 				break
 		}
 	});
-
-	$('#schedule_button').on('click', function() {
-		// reset alert if need be
-		alertReset();
-
-		// exit if input isn't valid
-		if(!validator.form()) return;
-
-		// show spinner
-		showSpinner('#create_button', 'Creating...');
-
-		var service = $('#services').val();
-		var dateTime = $('#datetime').datetimepicker('getValue');
-		var isoDateTime = new Date(dateTime).toISOString();
-
-		const settings = {
-			method: 'POST',
-			headers: {
-				'Accept': 'application/json',
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({
-				'service': service,
-				'datetime': isoDateTime,
-			})
-		}
-
-		var statusCode = '';
-		var statusText = '';
-		new API().request('/appointment/', settings)
-			.then(response => {
-				statusCode = response.status;
-				statusText = response.msg;
-
-				switch(statusCode) {
-					case 200:
-						statusText = `${statusText} View <a href="/appointment/viewall">appointments</a>.`;
-						$('#main-form').hide();
-						alertShow(statusText, 'alert-success');
-						break;
-					default:
-						alertShow(statusText, 'alert-danger');
-						hideSpinner('#schedule_button', 'Schedule');
-						break
-				}
-			})
-	})
 });

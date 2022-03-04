@@ -1,4 +1,11 @@
 $(function () {
+	// Bind enter key to trigger login attempt
+	$(document).on( "keydown", function(e){
+		if (e.key == "Enter"){
+			$("#login_button").trigger('click');
+		}
+	});
+
 	var validator = $('#main-form').validate({
 		rules: {
 			email: {
