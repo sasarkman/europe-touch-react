@@ -335,7 +335,7 @@ router.route('/forgotPassword').
 								subject: 'Password reset request',
 								text: `
 									Hello,
-									Please follow this link to reset your password: http://${req.headers.host}/account/resetPassword/${token}
+									Please follow this link to reset your password: ${req.protocol}://${req.headers.host}/account/resetPassword/${token}. (check your spam filter!)
 								`
 							};
 						
